@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f1a0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mon Jardin">
+<title>Mon Jardin</title>
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f1a0f;--bg2:#162016;--bg3:#1e2e1e;--bg4:#253025;
+  --green:#4a8c4a;--greenl:#7ab87a;--greend:#2d5a2d;
+  --cream:#f0ead8;--cream2:#c8bfa8;--cream3:#8a8070;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+  --r:16px;--rs:10px;
+  --blue:#3b82f6;--orange:#f59e0b;--purple:#8b5cf6;--pink:#ec4899;--red:#ef4444;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--cream);min-height:100vh;font-size:15px}
+/* ── HEADER ── */
+header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 1.25rem;position:sticky;top:0;z-index:40}
+.header-row{display:flex;align-items:center;justify-content:space-between;height:56px}
+.logo{font-family:'Playfair Display',serif;font-size:22px;color:var(--cream);display:flex;align-items:center;gap:10px;cursor:pointer}
+.logo-leaf{width:26px;height:26px;background:var(--green);border-radius:50% 50% 50% 0;transform:rotate(-45deg);flex-shrink:0}
+.header-right{display:flex;align-items:center;gap:10px}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#555;flex-shrink:0}
+.sync-dot.ok{background:var(--greenl)}.sync-dot.err{background:#e07070}.sync-dot.loading{background:#f0c040;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.menu-btn{width:40px;height:40px;border-radius:var(--rs);border:1px solid var(--border2);background:var(--bg3);color:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer}
+.menu-btn span{display:block;width:18px;height:2px;background:var(--cream);border-radius:2px;transition:all .2s}
+/* ── SIDE MENU ── */
+.menu-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:50}
+.menu-overlay.open{display:block}
+.side-menu{position:fixed;top:0;right:-300px;width:280px;height:100%;background:var(--bg2);border-left:1px solid var(--border2);z-index:51;transition:right .25s;padding:0;overflow-y:auto;display:flex;flex-direction:column}
+.side-menu.open{right:0}
+.side-menu-hdr{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.25rem 1rem;border-bottom:1px solid var(--border)}
+.side-menu-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--cream)}
+.close-menu{background:none;border:none;color:var(--cream3);font-size:22px;cursor:pointer}
+.menu-item{display:flex;align-items:center;gap:14px;padding:1rem 1.25rem;cursor:pointer;border:none;background:none;width:100%;text-align:left;color:var(--cream);font-size:15px;font-family:'DM Sans',sans-serif;border-bottom:1px solid var(--border);transition:background .15s}
+.menu-item:hover{background:var(--bg3)}
+.menu-item-icon{width:36px;height:36px;border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.menu-item-label{font-weight:500}
+.menu-item-sub{font-size:12px;color:var(--cream3);margin-top:2px}
+/* ── NAV TABS ── */
+.nav-tabs{display:flex;border-bottom:1px solid var(--border);padding:0 1.25rem;overflow-x:auto;scrollbar-width:none}
+.nav-tabs::-webkit-scrollbar{display:none}
+.nav-tab{flex-shrink:0;padding:10px 16px 11px;font-size:14px;color:var(--cream3);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
+.nav-tab:hover{color:var(--cream)}.nav-tab.active{color:var(--cream);border-bottom-color:var(--greenl);font-weight:600}
+/* ── MASSIF TABS ── */
+.massif-bar{display:flex;overflow-x:auto;scrollbar-width:none;padding:0 1.25rem;background:var(--bg3)}
+.massif-bar::-webkit-scrollbar{display:none}
+.massif-tab{flex-shrink:0;padding:8px 14px 9px;font-size:13px;color:rgba(240,234,216,0.45);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
+.massif-tab:hover{color:var(--cream)}.massif-tab.active{color:var(--cream);border-bottom-color:var(--green);font-weight:500}
+/* ── PAGES ── */
+.page{display:none}.page.active{display:block}
+.page-inner{padding:1.25rem;max-width:960px;margin:0 auto}
+/* ── GRID ── */
+.page-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--cream);margin-bottom:1.25rem;display:flex;align-items:baseline;gap:10px}
+.page-title-sub{font-size:13px;color:var(--cream3);font-family:'DM Sans',sans-serif;font-weight:400}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:14px}
+.card{border-radius:var(--r);overflow:hidden;cursor:pointer;position:relative;aspect-ratio:3/4;background:var(--bg3);transition:transform .18s,box-shadow .18s;box-shadow:0 4px 20px rgba(0,0,0,0.3)}
+.card:hover{transform:translateY(-4px);box-shadow:0 10px 36px rgba(0,0,0,0.4)}
+.card-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .4s}
+.card:hover .card-img{transform:scale(1.06)}
+.card-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:52px;background:linear-gradient(135deg,var(--bg3),var(--bg4))}
+.card-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(5,10,5,0.92) 0%,rgba(5,10,5,0.15) 55%,transparent 100%)}
+.card-body{position:absolute;bottom:0;left:0;right:0;padding:.875rem}
+.card-name{font-family:'Playfair Display',serif;font-size:15px;color:#fff;line-height:1.25;margin-bottom:3px}
+.card-latin{font-size:11px;color:rgba(255,255,255,0.45);font-style:italic;margin-bottom:6px}
+.card-tags{display:flex;flex-wrap:wrap;gap:3px}
+.ptag{font-size:10px;padding:2px 7px;border-radius:99px;font-weight:600;border:1px solid}
+.ptag-g{background:rgba(74,140,74,0.25);color:#a8e0a8;border-color:rgba(74,140,74,0.35)}
+.ptag-y{background:rgba(245,158,11,0.2);color:#fcd87a;border-color:rgba(245,158,11,0.28)}
+.ptag-p{background:rgba(139,92,246,0.2);color:#d4b8ff;border-color:rgba(139,92,246,0.28)}
+.empty{grid-column:1/-1;text-align:center;padding:3rem 1rem;color:var(--cream3)}
+/* ── DETAIL MODAL ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:100;overflow-y:auto;padding:1rem}
+.overlay.open{display:flex;align-items:flex-start;justify-content:center}
+.modal{background:var(--bg2);border-radius:var(--r);width:100%;max-width:540px;margin:auto;overflow:hidden}
+/* Detail header */
+.det-hero-wrap{position:relative;height:240px;background:linear-gradient(135deg,var(--bg3),var(--bg4))}
+.det-hero{width:100%;height:100%;object-fit:cover}
+.det-hero-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:72px}
+.det-hero-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(5,10,5,0.95) 0%,transparent 50%)}
+.det-hero-body{position:absolute;bottom:0;left:0;right:0;padding:1.25rem}
+.det-name{font-family:'Playfair Display',serif;font-size:26px;color:#fff;margin-bottom:4px}
+.det-latin{font-size:14px;color:rgba(255,255,255,0.5);font-style:italic;margin-bottom:10px}
+.det-tags{display:flex;flex-wrap:wrap;gap:6px}
+.dtag{font-size:12px;padding:3px 10px;border-radius:99px;font-weight:600;border:1px solid}
+.dtag-blue{background:rgba(59,130,246,0.2);color:#93c5fd;border-color:rgba(59,130,246,0.3)}
+.dtag-green{background:rgba(74,140,74,0.25);color:#a8e0a8;border-color:rgba(74,140,74,0.35)}
+.dtag-orange{background:rgba(245,158,11,0.2);color:#fcd87a;border-color:rgba(245,158,11,0.28)}
+.dtag-red{background:rgba(239,68,68,0.2);color:#fca5a5;border-color:rgba(239,68,68,0.28)}
+.dtag-purple{background:rgba(139,92,246,0.2);color:#d4b8ff;border-color:rgba(139,92,246,0.28)}
+/* Det body */
+.det-body{padding:1.25rem}
+.det-section{margin-bottom:1.5rem}
+.det-section-title{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--cream3);font-weight:600;margin-bottom:.875rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+.det-grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.det-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.det-card{background:var(--bg3);border-radius:var(--rs);padding:12px}
+.det-card-title{font-size:11px;color:var(--cream3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.det-card-title svg,.det-card-title span.icon{margin-right:2px}
+.det-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border)}
+.det-row:last-child{border-bottom:none}
+.det-row-label{font-size:13px;color:var(--cream3)}
+.det-row-val{font-size:14px;color:var(--cream);font-weight:500;text-align:right;max-width:55%}
+/* Bars */
+.bar-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.bar-row:last-child{margin-bottom:0}
+.bar-label{font-size:13px;color:var(--cream2);width:90px;flex-shrink:0}
+.bar-wrap{flex:1;height:6px;background:rgba(255,255,255,0.08);border-radius:3px;margin:0 10px}
+.bar-fill{height:100%;border-radius:3px}
+.bar-val{font-size:12px;color:var(--cream3);width:56px;text-align:right;flex-shrink:0}
+/* Info cards */
+.info-card{background:var(--bg3);border-radius:var(--rs);padding:12px;border-left:3px solid}
+.info-card.green{border-color:var(--green)}
+.info-card.orange{border-color:#f59e0b}
+.info-card.red{border-color:#ef4444}
+.info-card.blue{border-color:#3b82f6}
+.info-card-title{font-size:12px;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.info-card li{font-size:13px;color:var(--cream2);margin-bottom:4px;padding-left:14px;position:relative;line-height:1.5}
+.info-card li::before{content:'→';position:absolute;left:0;color:var(--cream3)}
+/* Mult rows */
+.mult-row{background:var(--bg3);border-radius:var(--rs);padding:12px;margin-bottom:8px;display:flex;align-items:flex-start;gap:12px}
+.mult-badge{font-size:11px;padding:3px 9px;border-radius:99px;font-weight:600;flex-shrink:0;margin-top:1px}
+.mult-info-period{font-size:13px;font-weight:600;color:var(--cream);margin-bottom:3px}
+.mult-info-tip{font-size:13px;color:var(--cream2);line-height:1.5}
+/* Date badges */
+.date-badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:.5rem}
+.date-badge{font-size:12px;padding:4px 10px;border-radius:99px;background:var(--bg3);border:1px solid var(--border2);color:var(--cream2)}
+/* Actions modal (add/edit) */
+.form-modal{background:var(--bg2);border-radius:var(--r);width:100%;max-width:520px;margin:auto;padding:1.5rem}
+.form-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.form-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--cream)}
+.bx{background:none;border:none;color:var(--cream3);font-size:22px;cursor:pointer}
+.field{margin-bottom:1rem}
+.field label{display:block;font-size:12px;color:var(--cream3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em;font-weight:500}
+.field input,.field select,.field textarea{width:100%;border-radius:var(--rs);border:1px solid var(--border2);padding:10px 12px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--cream);background:var(--bg3);transition:border-color .15s}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--green)}
+.field textarea{min-height:72px;resize:vertical}
+.field select option{background:var(--bg2)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.section-sep{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--cream3);font-weight:600;padding:.875rem 0 .625rem;border-top:1px solid var(--border);margin-top:.25rem}
+.mult-form-block{background:var(--bg3);border-radius:var(--rs);padding:12px;margin-bottom:.875rem}
+.mult-form-title{font-size:13px;font-weight:600;color:var(--greenl);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.photo-zone{border:2px dashed var(--border2);border-radius:var(--rs);padding:1.25rem;text-align:center;cursor:pointer;transition:border-color .15s;margin-bottom:1rem}
+.photo-zone:hover{border-color:var(--green)}
+.photo-zone input{display:none}
+.photo-preview{width:100%;height:150px;object-fit:cover;border-radius:var(--rs);margin-bottom:.5rem;display:none}
+.photo-label{font-size:13px;color:var(--cream3)}
+.form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border)}
+.btn{padding:10px 18px;border-radius:var(--rs);font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:7px;font-weight:600;transition:all .15s}
+.btn-o{background:transparent;border:1px solid var(--border2);color:var(--cream2)}.btn-o:hover{border-color:var(--green);color:var(--greenl)}
+.btn-g{background:var(--green);border:none;color:#fff}.btn-g:hover{background:var(--greend)}
+.btn-r{background:transparent;border:1px solid rgba(239,68,68,0.4);color:#fca5a5;margin-right:auto}.btn-r:hover{background:rgba(239,68,68,0.1)}
+.btn-ai{background:var(--bg4);border:1px solid var(--border2);color:var(--greenl);width:100%;justify-content:center;margin-bottom:.75rem;font-size:14px}
+.btn-ai:hover{background:var(--bg3)}.btn-ai:disabled{opacity:.4;cursor:not-allowed}
+.ai-hint{font-size:12px;color:var(--cream3);text-align:center;margin-bottom:1rem;margin-top:-.5rem}
+.add-mult-btns{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:.875rem}
+.add-mult-btn{font-size:12px;padding:5px 11px;border-radius:99px;border:1px solid var(--border2);background:transparent;color:var(--cream2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.add-mult-btn:hover{border-color:var(--green);color:var(--greenl)}
+/* ── CALENDAR / MOIS ── */
+.cal-controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.25rem;align-items:center}
+.cal-btn{padding:7px 15px;border-radius:var(--rs);border:1px solid var(--border2);font-size:13px;cursor:pointer;background:transparent;color:var(--cream2);font-family:'DM Sans',sans-serif;font-weight:500;transition:all .15s}
+.cal-btn.active{background:var(--green);color:#fff;border-color:var(--green)}
+.cal-filter{padding:7px 12px;border-radius:var(--rs);border:1px solid var(--border2);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--cream);background:var(--bg3)}
+.cal-filter option{background:var(--bg2)}
+.cal-grid12{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:10px}
+.cal-month{background:var(--bg2);border-radius:var(--rs);border:1px solid var(--border);overflow:hidden}
+.cal-month.now{border-color:var(--green)}
+.cal-month-hdr{background:var(--bg3);color:var(--cream2);font-size:13px;font-weight:600;padding:7px 12px;display:flex;align-items:center;justify-content:space-between}
+.cal-month.now .cal-month-hdr{background:var(--greend);color:var(--cream)}
+.cal-month-body{padding:8px;min-height:50px}
+.cal-entry{font-size:12px;padding:3px 7px;border-radius:5px;margin-bottom:4px;cursor:pointer;line-height:1.3;border-left:2px solid}
+.ce-semis{background:rgba(74,140,74,0.15);color:#a8e0a8;border-color:#4a8c4a}
+.ce-bouturage{background:rgba(59,130,246,0.15);color:#93c5fd;border-color:#3b82f6}
+.ce-division{background:rgba(245,158,11,0.15);color:#fcd87a;border-color:#f59e0b}
+.ce-marcottage{background:rgba(139,92,246,0.15);color:#d4b8ff;border-color:#8b5cf6}
+.ce-greffe{background:rgba(236,72,153,0.15);color:#f9a8d4;border-color:#ec4899}
+.ce-taille{background:rgba(239,68,68,0.15);color:#fca5a5;border-color:#ef4444}
+.ce-arrosage{background:rgba(14,165,233,0.15);color:#7dd3fc;border-color:#0ea5e9}
+.ce-engrais{background:rgba(16,185,129,0.15);color:#6ee7b7;border-color:#10b981}
+.cal-list-month{background:var(--bg2);border-radius:var(--rs);border:1px solid var(--border);overflow:hidden;margin-bottom:10px}
+.cal-list-month.now{border-color:var(--green)}
+.cal-list-hdr{background:var(--bg3);padding:10px 16px;display:flex;align-items:center;justify-content:space-between}
+.cal-list-hdr-name{font-size:15px;font-weight:600;color:var(--cream)}
+.cal-list-hdr-badge{font-size:12px;background:rgba(255,255,255,0.1);padding:2px 9px;border-radius:99px;color:var(--cream2)}
+.cal-list-body{padding:8px}
+.cal-list-entry{display:flex;align-items:center;gap:12px;padding:9px 10px;border-radius:var(--rs);margin-bottom:4px;cursor:pointer;transition:background .12s}
+.cal-list-entry:last-child{margin-bottom:0}
+.cal-list-entry:hover{background:var(--bg3)}
+.cle-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.cle-info{flex:1;min-width:0}
+.cle-name{font-size:14px;font-weight:500;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cle-detail{font-size:12px;color:var(--cream3);margin-top:1px;line-height:1.4}
+.cle-badge{font-size:11px;padding:3px 9px;border-radius:99px;font-weight:600;flex-shrink:0}
+/* ── TOAST ── */
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--bg3);border:1px solid var(--border2);color:var(--cream);padding:11px 22px;border-radius:99px;font-size:14px;z-index:200;transition:transform .3s;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.spin{width:16px;height:16px;border:2px solid rgba(255,255,255,0.2);border-top-color:var(--greenl);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-row">
+    <div class="logo" id="btnLogoHome">
+      <div class="logo-leaf"></div>
+      Mon Jardin
+    </div>
+    <div class="header-right">
+      <div class="sync-dot" id="sdot" title="Statut synchronisation"></div>
+      <button class="menu-btn" id="btnMenu" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+  <div class="nav-tabs" id="navTabs">
+    <button class="nav-tab active" data-nav="massifs">🌿 Massifs</button>
+    <button class="nav-tab" data-nav="calendrier">📅 Multiplication</button>
+    <button class="nav-tab" data-nav="mois">🗓 Ce mois-ci</button>
+  </div>
+</header>
+
+<!-- Side menu -->
+<div class="menu-overlay" id="menuOverlay"></div>
+<div class="side-menu" id="sideMenu">
+  <div class="side-menu-hdr">
+    <span class="side-menu-title">Mon Jardin</span>
+    <button class="close-menu" id="btnCloseMenu">✕</button>
+  </div>
+  <button class="menu-item" data-goto="massifs">
+    <div class="menu-item-icon" style="background:rgba(74,140,74,0.2)">🌿</div>
+    <div><div class="menu-item-label">Mes massifs</div><div class="menu-item-sub">Vue par massif</div></div>
+  </button>
+  <button class="menu-item" data-goto="calendrier">
+    <div class="menu-item-icon" style="background:rgba(59,130,246,0.2)">📅</div>
+    <div><div class="menu-item-label">Multiplication</div><div class="menu-item-sub">Semis, bouturage, division…</div></div>
+  </button>
+  <button class="menu-item" data-goto="mois">
+    <div class="menu-item-icon" style="background:rgba(245,158,11,0.2)">🗓</div>
+    <div><div class="menu-item-label">Ce mois-ci</div><div class="menu-item-sub">Que faire au jardin</div></div>
+  </button>
+  <button class="menu-item" id="menuBtnAdd">
+    <div class="menu-item-icon" style="background:rgba(74,140,74,0.2)">➕</div>
+    <div><div class="menu-item-label">Ajouter une plante</div><div class="menu-item-sub">Nouvelle fiche</div></div>
+  </button>
+  <button class="menu-item" id="menuBtnSync">
+    <div class="menu-item-icon" style="background:rgba(255,255,255,0.05)">↻</div>
+    <div><div class="menu-item-label">Synchroniser</div><div class="menu-item-sub">Recharger les données</div></div>
+  </button>
+</div>
+
+<!-- Page Massifs -->
+<div class="page active" id="page-massifs">
+  <div class="massif-bar" id="massifBar"></div>
+  <div class="page-inner">
+    <div class="page-title"><span id="massifTitle"></span><span class="page-title-sub" id="massifCount"></span></div>
+    <div class="grid" id="grid"></div>
+  </div>
+</div>
+
+<!-- Page Calendrier multiplication -->
+<div class="page" id="page-calendrier">
+  <div class="page-inner">
+    <div class="page-title">Calendrier de multiplication</div>
+    <div class="cal-controls">
+      <button class="cal-btn active" id="btnCalGrid">📆 Calendrier</button>
+      <button class="cal-btn" id="btnCalList">📋 Liste</button>
+      <select class="cal-filter" id="filterMethod">
+        <option value="">Toutes méthodes</option>
+        <option value="semis">🌱 Semis</option>
+        <option value="bouturage">✂️ Bouturage</option>
+        <option value="division">⚔️ Division</option>
+        <option value="marcottage">🔗 Marcottage</option>
+        <option value="greffe">🪢 Greffe</option>
+      </select>
+    </div>
+    <div id="calView"></div>
+  </div>
+</div>
+
+<!-- Page Ce mois-ci -->
+<div class="page" id="page-mois">
+  <div class="page-inner">
+    <div class="page-title">Que faire au jardin<span class="page-title-sub" id="moisCourant"></span></div>
+    <div class="cal-controls">
+      <select class="cal-filter" id="filterMois">
+        <option value="">Ce mois-ci</option>
+      </select>
+      <select class="cal-filter" id="filterAction">
+        <option value="">Toutes actions</option>
+        <option value="taille">✂️ Taille</option>
+        <option value="semis">🌱 Semis</option>
+        <option value="bouturage">🔪 Bouturage</option>
+        <option value="arrosage">💧 Arrosage spécial</option>
+        <option value="engrais">🌿 Engrais</option>
+        <option value="plantation">🪴 Plantation</option>
+        <option value="autre">📝 Autre</option>
+      </select>
+    </div>
+    <div id="moisView"></div>
+  </div>
+</div>
+
+<!-- Detail overlay -->
+<div class="overlay" id="detOverlay">
+  <div class="modal">
+    <div class="det-hero-wrap" id="detHero">
+      <div class="det-hero-ph" id="detHeroPh">🌱</div>
+      <div class="det-hero-ov"></div>
+      <div class="det-hero-body">
+        <div class="det-name" id="detName"></div>
+        <div class="det-latin" id="detLatin"></div>
+        <div class="det-tags" id="detTags"></div>
+      </div>
+    </div>
+    <div class="det-body" id="detBody"></div>
+    <div class="form-actions" style="padding:1rem 1.25rem;margin-top:0;border-top:1px solid var(--border)">
+      <button class="btn btn-o" id="btnEdit">✎ Modifier</button>
+      <button class="btn btn-g" id="btnCloseDet">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit overlay -->
+<div class="overlay" id="addOverlay">
+  <div class="form-modal">
+    <div class="form-hdr">
+      <span class="form-title" id="addTitle">Ajouter une plante</span>
+      <button class="bx" id="btnCloseAdd">✕</button>
+    </div>
+    <!-- Photo -->
+    <div class="photo-zone" id="photoZone">
+      <input type="file" id="photoInput" accept="image/*">
+      <img class="photo-preview" id="photoPreview" alt="">
+      <div class="photo-label" id="photoLabel">📷 Ajouter une photo · cliquer ou glisser</div>
+    </div>
+    <!-- Base -->
+    <div class="field"><label>Nom commun *</label><input id="fNom" placeholder="Dahlia, Rosier…"></div>
+    <button class="btn btn-ai" id="btnGen">✦ Générer la fiche automatiquement</button>
+    <p class="ai-hint">Entre le nom puis génère · corrige ensuite si besoin</p>
+    <div class="field"><label>Nom latin</label><input id="fLatin" placeholder="Dahlia pinnata"></div>
+    <div class="field"><label>Massif</label><select id="fMassif"></select></div>
+    <div class="row2">
+      <div class="field"><label>Exposition</label>
+        <select id="fExpo"><option value="">—</option><option>Plein soleil</option><option>Mi-ombre</option><option>Ombre</option></select>
+      </div>
+      <div class="field"><label>Arrosage</label>
+        <select id="fArro"><option value="">—</option><option>Faible</option><option>Modéré</option><option>Régulier</option><option>Abondant</option></select>
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Floraison</label><input id="fFlor" placeholder="Juin – Oct."></div>
+      <div class="field"><label>Couleur</label><input id="fCoul" placeholder="Rouge, rose…"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Type de sol</label><input id="fSol" placeholder="Drainant, acide…"></div>
+      <div class="field"><label>Hauteur adulte</label><input id="fTaille" placeholder="60 cm – 1 m"></div>
+    </div>
+    <div class="field"><label>Notes personnelles</label><textarea id="fNotes" placeholder="Observations, particularités…"></textarea></div>
+
+    <div class="section-sep">📅 Dates clés</div>
+    <div class="row2">
+      <div class="field"><label>Date(s) de plantation</label><input id="fDatesPlantation" placeholder="ex: Automne 2023, Mars 2024"></div>
+      <div class="field"><label>Date(s) de semis</label><input id="fDatesSemis" placeholder="ex: Janvier 2024"></div>
+    </div>
+    <div class="field"><label>Date(s) de taille</label><input id="fDatesTaille" placeholder="ex: Février 2024, Juin 2024"></div>
+
+    <div class="section-sep">🌱 Multiplication</div>
+    <div id="multFields"></div>
+    <div class="add-mult-btns" id="multAddBtns">
+      <button class="add-mult-btn" data-addmult="semis">+ Semis</button>
+      <button class="add-mult-btn" data-addmult="bouturage">+ Bouturage</button>
+      <button class="add-mult-btn" data-addmult="division">+ Division</button>
+      <button class="add-mult-btn" data-addmult="marcottage">+ Marcottage</button>
+      <button class="add-mult-btn" data-addmult="greffe">+ Greffe</button>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-r" id="btnDel" style="display:none">🗑 Supprimer</button>
+      <button class="btn btn-o" id="btnCancelAdd">Annuler</button>
+      <button class="btn btn-g" id="btnSave">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────────
+const SHEET_ID   = '1Hp0J2iwvFoSwqwd2nrlR0ILUfDx57y27-mMLxOeG2-U';
+const API_KEY    = 'AIzaSyCsMZVzrkRchl6Yqrz8X8d9bM07yycom54';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwKVTE1Fk4voP3OEZgRvpcUyzOP2YwuTXoT9us3OIiMmvjIIDpTdW8IVEFau5Z9nApXvg/exec';
+const SHEET_NAME = 'Plantes';
+const MASSIFS    = ["Demi Lune","Allée d'Agrumes","Le Central"];
+const MOIS_NOM   = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+const MULT_ICONS = {semis:'🌱',bouturage:'✂️',division:'⚔️',marcottage:'🔗',greffe:'🪢'};
+const MULT_COLORS= {semis:'rgba(74,140,74,0.25)',bouturage:'rgba(59,130,246,0.2)',division:'rgba(245,158,11,0.2)',marcottage:'rgba(139,92,246,0.2)',greffe:'rgba(236,72,153,0.2)'};
+const MULT_TEXT  = {semis:'#a8e0a8',bouturage:'#93c5fd',division:'#fcd87a',marcottage:'#d4b8ff',greffe:'#f9a8d4'};
+const ACTION_ICONS={taille:'✂️',semis:'🌱',bouturage:'🔪',arrosage:'💧',engrais:'🌿',plantation:'🪴',autre:'📝'};
+const ACTION_BG  ={taille:'rgba(239,68,68,0.15)',semis:'rgba(74,140,74,0.15)',bouturage:'rgba(59,130,246,0.15)',arrosage:'rgba(14,165,233,0.15)',engrais:'rgba(16,185,129,0.15)',plantation:'rgba(139,92,246,0.15)',autre:'rgba(255,255,255,0.08)'};
+// ────────────────────────────────────────────────────────────────
+
+const ICONS={dahlia:'🌸',surfinia:'🌺',oeillet:'🌼',saule:'🌿',olivier:'🫒',citron:'🍋',pamplemousse:'🍊',oranger:'🍊',rosier:'🌹',rose:'🌹',sauge:'🌿',pivoine:'🌸',tremiere:'🌻',begonia:'🌺',lavande:'💜',hortensia:'💐',jasmin:'🌼',iris:'🌸',tulipe:'🌷',fougere:'🌿',bambou:'🎋',mimosa:'🌼',magnolia:'🌸'};
+const WIKI={dahlia:'Dahlia pinnata',surfinia:'Petunia hybrida','oeillet de poète':'Dianthus barbatus',oeillet:'Dianthus caryophyllus','saule crevette':'Salix integra',olivier:'Olea europaea','citron 4 saison':'Citrus limon',citron:'Citrus limon',pamplemousse:'Citrus maxima','citron caviar':'Microcitrus australasica','citron vert':'Citrus aurantiifolia',oranger:'Citrus sinensis',rosier:'Rosa gallica','sauge perroquet':'Salvia elegans',pivoine:'Paeonia lactiflora','rose trémière':'Alcea rosea','bégonia nain':'Begonia semperflorens',hortensia:'Hydrangea macrophylla',lavande:'Lavandula angustifolia'};
+const imgCache={};
+function getIcon(n){if(!n)return'🌱';const s=n.toLowerCase();for(const[k,v]of Object.entries(ICONS)){if(s.includes(k))return v;}return'🌱';}
+async function fetchImg(nom,latin){
+  const title=latin&&latin.trim()?latin.trim():(()=>{if(!nom)return null;const s=nom.toLowerCase();for(const[k,v]of Object.entries(WIKI)){if(s.includes(k)||k.includes(s))return v;}return nom;})();
+  if(!title)return null;
+  if(imgCache[title]!==undefined)return imgCache[title];
+  try{
+    const r=await fetch(`https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=pageimages&format=json&pithumbsize=500&origin=*`);
+    const d=await r.json();
+    const p=Object.values(d.query.pages)[0];
+    return(imgCache[title]=p?.thumbnail?.source||null);
+  }catch(e){return(imgCache[title]=null);}
+}
+
+// ── PLANT DATABASE ──────────────────────────────────────────────
+const DB={
+  dahlia:{
+    latin:'Dahlia pinnata',expo:'Plein soleil',floraison:'Juillet – Octobre',couleur:'Rouge, rose, jaune, blanc',
+    sol:'Riche, humifère, bien drainé',arrosage:'Régulier',taille:'40 cm – 1,5 m',
+    type:'Vivace tubéreuse',croissance:'Rapide',longevite:'Indéfinie (tubercules)',etalement:'40–80 cm',
+    rusticite:'Sensible (gel > -5°C)',parfum:'Non',
+    arrosage_detail:'Régulier en période de croissance, 2–3 fois/semaine en été. Réduire après la première gelée.',
+    sol_detail:'Sol riche, profond, légèrement acide (pH 6–6,5). Améliorer avec du compost.',
+    plantation_detail:'Planter les tubercules en mai, 10 cm de profondeur, œil vers le haut.',
+    taille_detail:'Pincer le bourgeon central à 30 cm pour multiplier les tiges. Tuteurer les grandes variétés.',
+    engrais:'Engrais fleuraison (riche en potassium) toutes les 3 semaines de juin à septembre.',
+    bonsavoir:'Arracher les tubercules avant l\'hiver (sous -5°C), sécher et stocker dans du sable sec à l\'abri du gel.',
+    toxique:null,
+    tags:['Vivace','Plein soleil','Fleurs d\'été'],
+    mult:[{method:'bouturage',periodStart:'Mars',periodEnd:'Avril',tip:'Bouturer les jeunes pousses issues des tubercules dans du sable humide à 18–20°C'},{method:'division',periodStart:'Mars',periodEnd:'Mars',tip:'Diviser les touffes de tubercules en gardant un œil par section'}],
+    actions:[{mois:[4,5,6,7,8,9],type:'arrosage',tip:'Arroser copieusement 2-3 fois/semaine'},{mois:[5,6],type:'autre',tip:'Tuteurer et pincer le bourgeon central'},{mois:[10,11],type:'autre',tip:'Arracher les tubercules après les premières gelées, stocker hors-gel'},{mois:[4],type:'plantation',tip:'Planter les tubercules en pleine terre dès mi-avril'},{mois:[2,3],type:'engrais',tip:'Préparer le sol avec du compost avant plantation'}]
+  },
+  surfinia:{
+    latin:'Petunia ×hybrida',expo:'Plein soleil',floraison:'Mai – Octobre',couleur:'Mauve, rose, blanc, rouge',
+    sol:'Léger, drainant',arrosage:'Abondant',taille:'30–60 cm',
+    type:'Annuelle',croissance:'Rapide',longevite:'1 an',etalement:'60–100 cm (retombant)',
+    rusticite:'Gélive',parfum:'Légèrement parfumé',
+    arrosage_detail:'Arroser abondamment tous les jours en été. Ne jamais laisser sécher. Arroser au pied.',
+    sol_detail:'Substrat léger, bien drainé. En pot : terreau géraniums + perlite.',
+    plantation_detail:'Repiquer après les gelées (mi-mai). Espacer de 40–50 cm.',
+    taille_detail:'Pas de taille stricte. Supprimer les fleurs fanées pour prolonger la floraison.',
+    engrais:'Engrais géraniums toutes les 2 semaines de mai à octobre.',
+    bonsavoir:'Arroser sans mouiller le feuillage pour éviter les maladies cryptogamiques.',
+    toxique:null,
+    tags:['Annuelle','Plein soleil','Retombante'],
+    mult:[{method:'bouturage',periodStart:'Août',periodEnd:'Septembre',tip:'Bouturer les tiges semi-aoûtées dans un mélange sable-terreau, à l\'abri du gel pour hiverner'}],
+    actions:[{mois:[4,5,6,7,8,9],type:'arrosage',tip:'Arroser quotidiennement en été, jamais laisser sécher'},{mois:[4,5,6,7,8,9],type:'engrais',tip:'Fertiliser toutes les 2 semaines avec engrais géraniums'},{mois:[4],type:'plantation',tip:'Repiquer après les dernières gelées (mi-mai en Dordogne)'},{mois:[7,8],type:'bouturage',tip:'Bouturer pour multiplier et hiverner à l\'abri'}]
+  },
+  'oeillet de poète':{
+    latin:'Dianthus barbatus',expo:'Plein soleil',floraison:'Mai – Juillet',couleur:'Rouge, rose, blanc, bicolore',
+    sol:'Bien drainé, légèrement calcaire',arrosage:'Modéré',taille:'30–60 cm',
+    type:'Bisannuelle',croissance:'Moyen',longevite:'2 ans',etalement:'20–40 cm',
+    rusticite:'Rustique (-15°C)',parfum:'Légèrement parfumé',
+    arrosage_detail:'Arrosage modéré, laisser sécher entre deux arrosages. Éviter l\'excès d\'eau.',
+    sol_detail:'Sol bien drainé, légèrement calcaire, ordinaire. Pas de sol lourd.',
+    plantation_detail:'Planter en automne (repiqués de semis d\'été) ou au printemps.',
+    taille_detail:'Couper les tiges fanées pour prolonger la floraison et favoriser la remontée.',
+    engrais:'Peu exigeant. Un apport de compost au printemps suffit.',
+    bonsavoir:'Bisannuelle : semer en juin pour fleurir l\'année suivante. Se ressème spontanément.',
+    toxique:null,
+    tags:['Bisannuelle','Plein soleil','Parfumé'],
+    mult:[{method:'semis',periodStart:'Juin',periodEnd:'Juillet',tip:'Semer en terrine à mi-ombre, repiquer en août, planter en place en octobre'},{method:'bouturage',periodStart:'Juillet',periodEnd:'Août',tip:'Bouturer les tiges basales après floraison dans du sable humide'}],
+    actions:[{mois:[5,6,7],type:'autre',tip:'Couper les tiges fanées pour prolonger la floraison'},{mois:[5,6],type:'semis',tip:'Semer les graines pour la floraison de l\'année suivante'},{mois:[9,10],type:'plantation',tip:'Repiquer les jeunes plants en place'}]
+  },
+  oeillet:{
+    latin:'Dianthus caryophyllus',expo:'Plein soleil',floraison:'Mai – Août',couleur:'Rose, rouge, blanc, jaune',
+    sol:'Drainant, calcaire',arrosage:'Modéré',taille:'30–80 cm',
+    type:'Vivace (souvent cultivée en annuelle)',croissance:'Moyen',longevite:'2–3 ans',etalement:'20–35 cm',
+    rusticite:'Rustique (-10°C)',parfum:'Très parfumé (clou de girofle)',
+    arrosage_detail:'Arrosage modéré. Sol légèrement humide mais jamais détrempé.',
+    sol_detail:'Sol drainant, calcaire, pauvre à moyen. Éviter les sols lourds et acides.',
+    plantation_detail:'Planter au printemps ou en automne. Espacer de 25–30 cm.',
+    taille_detail:'Pincer les jeunes pousses pour favoriser la ramification. Supprimer les fleurs fanées.',
+    engrais:'Engrais pauvre en azote, riche en potassium pour une belle floraison.',
+    bonsavoir:'L\'oeillet est l\'une des fleurs les plus parfumées du jardin. Préférer un sol légèrement calcaire.',
+    toxique:null,
+    tags:['Vivace','Plein soleil','Très parfumé'],
+    mult:[{method:'bouturage',periodStart:'Juillet',periodEnd:'Août',tip:'Bouturer les tiges non fleuries dans du sable, à mi-ombre'}],
+    actions:[{mois:[4,5],type:'plantation',tip:'Planter au printemps'},{mois:[5,6,7],type:'autre',tip:'Pincer les boutons floraux latéraux pour avoir de plus grosses fleurs'}]
+  },
+  'saule crevette':{
+    latin:'Salix integra \'Hakuro-nishiki\'',expo:'Plein soleil',floraison:'Avril (chatons)',couleur:'Feuillage panaché rose, blanc et vert',
+    sol:'Frais à humide, tous sols',arrosage:'Régulier',taille:'1,5–2 m (boule taillée)',
+    type:'Arbuste caduc',croissance:'Rapide',longevite:'20–30 ans',etalement:'1–1,5 m',
+    rusticite:'Très rustique (-20°C)',parfum:'Non',
+    arrosage_detail:'Aimer l\'humidité. Arroser régulièrement, surtout en été et les premières années.',
+    sol_detail:'S\'adapte à tous les sols, y compris argileux et humides. Idéal en bord de bassin.',
+    plantation_detail:'Planter en automne ou printemps. Associer à un tuteur pour la tige greffée.',
+    taille_detail:'Tailler sévèrement chaque année après la feuillaison (avril-mai) pour conserver la forme boule et aviver les couleurs du feuillage panaché.',
+    engrais:'Peu exigeant. Compost au printemps suffit.',
+    bonsavoir:'Le feuillage panaché (rose-blanc-vert) est plus coloré sur les jeunes pousses. La taille annuelle est indispensable pour maintenir cet effet.',
+    toxique:null,
+    tags:['Arbuste','Rustique','Feuillage décoratif'],
+    mult:[{method:'bouturage',periodStart:'Janvier',periodEnd:'Février',tip:'Boutures de bois dormant de 20 cm plantées directement en pleine terre'}],
+    actions:[{mois:[3,4],type:'taille',tip:'Tailler sévèrement après la feuillaison pour conserver la forme boule'},{mois:[3,4,5,6,7,8,9],type:'arrosage',tip:'Maintenir le sol frais, surtout en période sèche'}]
+  },
+  olivier:{
+    latin:'Olea europaea',expo:'Plein soleil',floraison:'Mai – Juin',couleur:'Blanc crème, très discret',
+    sol:'Drainant, pauvre, calcaire',arrosage:'Faible',taille:'3–5 m (taillé à volonté)',
+    type:'Arbre persistant',croissance:'Lent',longevite:'Plusieurs siècles',etalement:'3–6 m',
+    rusticite:'Rustique (-10°C)',parfum:'Non',
+    arrosage_detail:'Arrosage très faible une fois établi. Craint l\'excès d\'eau, surtout l\'hiver. En pot : 1 fois/semaine en été, 1 fois/2 semaines en hiver.',
+    sol_detail:'Sol très drainant, pauvre, calcaire ou neutre. Ajouter du gravier au fond du trou. Éviter absolument les sols lourds et humides.',
+    plantation_detail:'Planter au printemps, après les gelées. Buter le pied la première hiver.',
+    taille_detail:'Tailler légèrement après la récolte pour aérer la silhouette et supprimer le bois mort. Peut se tailler sévèrement sans dommage.',
+    engrais:'Très peu exigeant. Engrais olivier 1 fois au printemps suffit.',
+    bonsavoir:'Rustique jusqu\'à -10°C mais les jeunes sujets sont plus sensibles. Les fruits sont amers crus, nécessitent une lacto-fermentation ou désamérisation.',
+    toxique:null,
+    tags:['Arbre','Persistant','Méditerranéen'],
+    mult:[{method:'bouturage',periodStart:'Juillet',periodEnd:'Août',tip:'Boutures semi-aoûtées de 15 cm dans sable+terreau, chaleur 20°C, enracinement en 2-3 mois'},{method:'greffe',periodStart:'Mars',periodEnd:'Avril',tip:'Greffe en fente sur sauvageon : technique délicate, conseillée par un professionnel'}],
+    actions:[{mois:[2,3],type:'taille',tip:'Taille légère de forme avant la reprise de végétation'},{mois:[9,10,11],type:'autre',tip:'Récolte des olives selon maturité souhaitée (vertes ou noires)'},{mois:[3],type:'engrais',tip:'Apport d\'engrais olivier au printemps'}]
+  },
+  'citron 4 saison':{
+    latin:'Citrus limon',expo:'Plein soleil',floraison:'Toute l\'année par vagues',couleur:'Blanc, très parfumé',
+    sol:'Bien drainé, légèrement acide (pH 6–6,5)',arrosage:'Régulier',taille:'2–3 m',
+    type:'Arbuste persistant',croissance:'Moyen',longevite:'30–50 ans',etalement:'2–3 m',
+    rusticite:'Sensible (gel > -3°C)',parfum:'Fleurs très parfumées',
+    arrosage_detail:'Régulier en été (2-3 fois/sem), réduit en hiver. Ne jamais laisser sécher complètement ni noyer. Eau non calcaire de préférence.',
+    sol_detail:'Sol drainant, légèrement acide (pH 6–6,5). En pot : substrat spécial agrumes.',
+    plantation_detail:'Planter en pot en Dordogne pour pouvoir rentrer l\'hiver. Sortir après les gelées (mi-avril).',
+    taille_detail:'Taille légère pour équilibrer la silhouette. Supprimer le bois mort et les gourmands.',
+    engrais:'Engrais agrumes de mars à octobre, toutes les 3-4 semaines. Stopper en hiver.',
+    bonsavoir:'Protéger impérativement dès -3°C. En Dordogne : rentrer en véranda ou serre entre novembre et avril. Vaporiser le feuillage par temps chaud pour prévenir l\'araignée rouge.',
+    toxique:null,
+    tags:['Agrume','Persistant','Parfumé'],
+    mult:[{method:'bouturage',periodStart:'Mai',periodEnd:'Juin',tip:'Boutures semi-aoûtées de 12-15 cm, hormone d\'enracinement, serre chaude à 22°C'},{method:'greffe',periodStart:'Avril',periodEnd:'Mai',tip:'Greffe en écusson sur Poncirus trifoliata pour meilleure rusticité'}],
+    actions:[{mois:[3,4],type:'plantation',tip:'Sortir le pot après les dernières gelées (mi-avril)'},{mois:[10,11],type:'plantation',tip:'Rentrer en véranda ou serre avant les premières gelées'},{mois:[3,4,5,6,7,8,9,10],type:'engrais',tip:'Fertiliser avec engrais agrumes toutes les 3-4 semaines'},{mois:[6,7,8],type:'arrosage',tip:'Arroser 2-3 fois/semaine, vaporiser le feuillage par temps chaud'}]
+  },
+  pamplemousse:{
+    latin:'Citrus maxima',expo:'Plein soleil',floraison:'Printemps',couleur:'Blanc',
+    sol:'Riche et drainant',arrosage:'Régulier',taille:'3–5 m',
+    type:'Arbre persistant',croissance:'Moyen',longevite:'30–50 ans',etalement:'3–4 m',
+    rusticite:'Sensible (gel > -3°C)',parfum:'Fleurs parfumées',
+    arrosage_detail:'Régulier en été, réduit en hiver. Eau non calcaire de préférence.',
+    sol_detail:'Sol riche, drainant, légèrement acide. En pot : substrat agrumes.',
+    plantation_detail:'Cultiver en pot en climat dordognais pour hiverner à l\'abri.',
+    taille_detail:'Taille légère pour équilibrer. Supprimer le bois mort.',
+    engrais:'Engrais agrumes de mars à octobre.',
+    bonsavoir:'Le plus gros des agrumes. Fruits mûrs en automne-hiver. Rentrer sous abri dès -3°C.',
+    toxique:null,
+    tags:['Agrume','Persistant','Grand fruit'],
+    mult:[{method:'semis',periodStart:'Février',periodEnd:'Mars',tip:'Semer les graines fraîches à 25°C, levée en 3-4 sem, floraison longue à obtenir (8-10 ans)'},{method:'greffe',periodStart:'Avril',periodEnd:'Mai',tip:'Greffe en écusson sur Poncirus trifoliata'}],
+    actions:[{mois:[3,4],type:'plantation',tip:'Sortir le pot après les gelées'},{mois:[10,11],type:'plantation',tip:'Rentrer avant les gelées'},{mois:[3,4,5,6,7,8,9,10],type:'engrais',tip:'Engrais agrumes toutes les 4 semaines'}]
+  },
+  'citron caviar':{
+    latin:'Microcitrus australasica',expo:'Plein soleil',floraison:'Printemps',couleur:'Blanc rosé',
+    sol:'Drainant, légèrement acide',arrosage:'Modéré',taille:'2–4 m',
+    type:'Arbre persistant',croissance:'Lent',longevite:'20–30 ans',etalement:'1,5–2 m',
+    rusticite:'Très sensible (gel > -2°C)',parfum:'Fleurs parfumées',
+    arrosage_detail:'Modéré, sol légèrement humide. Réduit en hiver. Eau non calcaire.',
+    sol_detail:'Sol drainant, légèrement acide. En pot : substrat agrumes + perlite.',
+    plantation_detail:'Toujours en pot en Dordogne. Sortir en mai, rentrer en octobre.',
+    taille_detail:'Taille légère, attention aux épines. Supprimer bois mort.',
+    engrais:'Engrais agrumes mars-octobre. Oligo-éléments pour lutter contre la chlorose.',
+    bonsavoir:'Fruits originaux : petites billes à saveur citron-citron vert, récoltées juillet-août. Très épineux, manipuler avec précaution. Spécialité gastronomique rare.',
+    toxique:null,
+    tags:['Agrume rare','Persistant','Gastronomique'],
+    mult:[{method:'bouturage',periodStart:'Mai',periodEnd:'Juin',tip:'Boutures semi-aoûtées sous serre chaude, enracinement difficile (3-4 mois)'},{method:'greffe',periodStart:'Avril',periodEnd:'Mai',tip:'Greffe en écusson sur Poncirus trifoliata pour meilleure rusticité'}],
+    actions:[{mois:[4,5],type:'plantation',tip:'Sortir le pot (mai seulement, très sensible au froid)'},{mois:[9,10],type:'plantation',tip:'Rentrer avant toute gelée dès octobre'},{mois:[7,8],type:'autre',tip:'Récolte des fruits : petites billes juteuses à maturité'}]
+  },
+  'citron vert':{
+    latin:'Citrus aurantiifolia',expo:'Plein soleil',floraison:'Printemps',couleur:'Blanc',
+    sol:'Drainant',arrosage:'Régulier',taille:'2–4 m',
+    type:'Arbuste persistant',croissance:'Moyen',longevite:'20–30 ans',etalement:'2–3 m',
+    rusticite:'Très sensible (gel > -1°C)',parfum:'Fleurs parfumées',
+    arrosage_detail:'Régulier en été. Ne jamais laisser sécher. Eau non calcaire.',
+    sol_detail:'Sol bien drainé, légèrement acide. Substrat agrumes en pot.',
+    plantation_detail:'En pot impérativement en Dordogne. Rentrer impérativement en hiver (novembre-avril).',
+    taille_detail:'Taille légère d\'équilibre. Supprimer bois mort.',
+    engrais:'Engrais agrumes toutes les 3-4 semaines de mars à octobre.',
+    bonsavoir:'Le plus sensible au gel de tous les agrumes. Ne supporte pas le moindre gel. Sortir seulement quand tout risque de gelée est écarté (mai).',
+    toxique:null,
+    tags:['Agrume','Persistant','Très sensible gel'],
+    mult:[{method:'bouturage',periodStart:'Mai',periodEnd:'Juin',tip:'Boutures semi-ligneuses sous serre chaude à 22-25°C'},{method:'greffe',periodStart:'Avril',periodEnd:'Mai',tip:'Greffe en écusson sur Poncirus trifoliata'}],
+    actions:[{mois:[4,5],type:'plantation',tip:'Ne sortir qu\'en mai, après tout risque de gel'},{mois:[9,10],type:'plantation',tip:'Rentrer dès octobre, le premier à rentrer de tous les agrumes'},{mois:[3,4,5,6,7,8,9,10],type:'engrais',tip:'Engrais agrumes régulier'}]
+  },
+  oranger:{
+    latin:'Citrus sinensis',expo:'Plein soleil',floraison:'Printemps',couleur:'Blanc, fleur d\'oranger très parfumée',
+    sol:'Riche et drainant',arrosage:'Régulier',taille:'3–5 m',
+    type:'Arbre persistant',croissance:'Moyen',longevite:'50+ ans',etalement:'3–4 m',
+    rusticite:'Sensible (gel > -3°C)',parfum:'Fleurs très parfumées (eau de fleur)',
+    arrosage_detail:'Régulier en été (2-3 fois/sem), minimal en hiver. Eau non calcaire.',
+    sol_detail:'Sol riche, drainant, légèrement acide. Substrat agrumes en pot.',
+    plantation_detail:'En pot en Dordogne. Sortir mi-avril, rentrer en novembre.',
+    taille_detail:'Taille légère pour équilibrer la silhouette. Supprimer gourmands et bois mort.',
+    engrais:'Engrais agrumes avril-septembre, toutes les 3-4 semaines.',
+    bonsavoir:'La fleur d\'oranger (eau de fleur d\'oranger) se récolte en avril-mai. Rincer et distiller. Fruits récoltés en hiver. Protéger dès -3°C.',
+    toxique:null,
+    tags:['Agrume','Persistant','Très parfumé'],
+    mult:[{method:'greffe',periodStart:'Avril',periodEnd:'Mai',tip:'Greffe en écusson sur Poncirus trifoliata, floraison dès 3-4 ans'},{method:'bouturage',periodStart:'Juin',periodEnd:'Juillet',tip:'Boutures semi-aoûtées sous serre chaude, résultats variables'}],
+    actions:[{mois:[3,4],type:'plantation',tip:'Sortir mi-avril après les gelées'},{mois:[10,11],type:'plantation',tip:'Rentrer avant les premières gelées (novembre)'},{mois:[3,4,5,6,7,8,9,10],type:'engrais',tip:'Fertiliser avec engrais agrumes'},{mois:[4,5],type:'autre',tip:'Récolte des fleurs d\'oranger pour eau de fleur'}]
+  },
+  rosier:{
+    latin:'Rosa sp.',expo:'Plein soleil',floraison:'Mai – Octobre (remontant)',couleur:'Variable selon variété',
+    sol:'Riche, argileux, bien drainé',arrosage:'Régulier',taille:'60 cm – 2 m',
+    type:'Arbuste caduc',croissance:'Moyen',longevite:'30–50 ans',etalement:'60 cm – 1,5 m',
+    rusticite:'Rustique (-20°C)',parfum:'Variable (souvent parfumé)',
+    arrosage_detail:'Régulier au pied, jamais sur le feuillage. 2 fois/semaine en été. Éviter les arrosages le soir.',
+    sol_detail:'Sol riche, légèrement argileux, bien drainé. pH 6–6,5. Améliorer avec du compost et de la terre de bruyère.',
+    plantation_detail:'Planter de novembre à mars (racines nues) ou à n\'importe quelle saison (en pot). Pailler le pied.',
+    taille_detail:'Taille principale en février : couper les bois morts, tiges faibles. Garder 3-5 tiges vigoureuses. Tailler court (20-30 cm) pour les rosiers hybrides de thé.',
+    engrais:'Engrais rosiers en mars, puis tous les mois jusqu\'en septembre. Rose en cours de floraison : engrais liquide.',
+    bonsavoir:'Traiter préventivement contre l\'oïdium, la tache noire et les pucerons dès le débourrement (mars). Pailler abondamment le pied pour conserver l\'humidité et réduire les maladies.',
+    toxique:null,
+    tags:['Arbuste','Rustique','Parfumé'],
+    mult:[{method:'bouturage',periodStart:'Août',periodEnd:'Septembre',tip:'Boutures semi-aoûtées de 20 cm dans du sable, à l\'abri. Enracinement en 4-6 semaines'},{method:'greffe',periodStart:'Juillet',periodEnd:'Août',tip:'Greffe en écusson sur églantier : technique classique pour plants vigoureux'}],
+    actions:[{mois:[1,2],type:'taille',tip:'Taille principale : supprimer bois morts, croiser. Garder 3-5 tiges vigoureuses'},{mois:[3],type:'engrais',tip:'Premier apport d\'engrais rosiers au débourrement'},{mois:[3,4],type:'autre',tip:'Traitement préventif anti-oïdium et pucerons'},{mois:[5,6,7,8,9],type:'arrosage',tip:'Arroser au pied 2 fois/semaine, jamais sur le feuillage'},{mois:[5,6,7,8,9],type:'engrais',tip:'Engrais mensuel rosiers tout l\'été'},{mois:[11,12],type:'plantation',tip:'Planter les rosiers à racines nues'}]
+  },
+  'sauge perroquet':{
+    latin:'Salvia elegans',expo:'Plein soleil à mi-ombre',floraison:'Été – Automne',couleur:'Rouge vif',
+    sol:'Bien drainé, léger',arrosage:'Modéré',taille:'60–90 cm',
+    type:'Vivace (semi-rustique)',croissance:'Rapide',longevite:'5–10 ans si protégé',etalement:'50–70 cm',
+    rusticite:'Semi-rustique (gel > -5°C)',parfum:'Feuilles odeur ananas',
+    arrosage_detail:'Modéré, laisser sécher légèrement entre arrosages. Réduit en hiver si en pot.',
+    sol_detail:'Sol léger, bien drainé. Supporte une terre ordinaire. Éviter les sols lourds et humides.',
+    plantation_detail:'Planter en mai après les gelées. En Dordogne : en pot ou avec protection hivernale.',
+    taille_detail:'Tailler à moitié à l\'automne. Taille de forme au printemps.',
+    engrais:'Peu exigeant. Compost au printemps suffit.',
+    bonsavoir:'Feuilles à l\'odeur d\'ananas au froissement. Gélive : rentrer en pot dès -2°C ou protéger avec un voile. Très attractive pour les colibris et les butineurs.',
+    toxique:null,
+    tags:['Vivace','Mi-ombre','Odorante'],
+    mult:[{method:'bouturage',periodStart:'Août',periodEnd:'Septembre',tip:'Bouturer avant les gelées, hiverner à l\'abri hors-gel, repiquer au printemps'},{method:'division',periodStart:'Avril',periodEnd:'Mai',tip:'Diviser les touffes au printemps'}],
+    actions:[{mois:[4,5],type:'plantation',tip:'Planter en mai après les gelées'},{mois:[9,10],type:'taille',tip:'Tailler à moitié avant les premières gelées'},{mois:[10,11],type:'autre',tip:'Rentrer les pots à l\'abri du gel ou pailler abondamment le pied'},{mois:[3,4],type:'autre',tip:'Taille de forme au printemps sur le vieux bois'}]
+  },
+  pivoine:{
+    latin:'Paeonia lactiflora',expo:'Plein soleil à mi-ombre',floraison:'Mai – Juin',couleur:'Rose, rouge, blanc',
+    sol:'Profond, riche, bien drainé',arrosage:'Modéré',taille:'60–90 cm',
+    type:'Vivace',croissance:'Lent',longevite:'50+ ans',etalement:'60–90 cm',
+    rusticite:'Très rustique (-30°C)',parfum:'Souvent très parfumé',
+    arrosage_detail:'Modéré. Sol légèrement humide mais jamais détrempé. Sensible à l\'excès d\'eau en hiver.',
+    sol_detail:'Sol profond, riche en humus, bien drainé. pH neutre à légèrement calcaire. Améliorer avec du compost mûr.',
+    plantation_detail:'Planter impérativement en automne (sept-nov). Ne jamais enterrer le collet à plus de 3 cm de profondeur (cause principale de non-floraison).',
+    taille_detail:'Couper les tiges à 5 cm du sol en novembre. Ne pas tailler trop tôt. Soutenir les tiges florales avec des tuteurs.',
+    engrais:'Engrais riche en potassium et phosphore en mars (pas d\'azote). Compost en automne.',
+    bonsavoir:'CRUCIAL : ne jamais enterrer le collet à plus de 3 cm. Vivace très longévive (50 ans et plus) qui n\'aime pas être déplacée. Premier fleurissement parfois long (3-4 ans).',
+    toxique:'Légèrement toxique si ingéré.',
+    tags:['Vivace','Rustique','Très parfumée'],
+    mult:[{method:'division',periodStart:'Septembre',periodEnd:'Octobre',tip:'Diviser en automne : conserver 3-5 yeux roses/division. Replanter aussitôt à faible profondeur'},{method:'semis',periodStart:'Septembre',periodEnd:'Octobre',tip:'Semis en automne : levée en 2 ans, floraison en 4-5 ans. Pour passionnés !'}],
+    actions:[{mois:[3],type:'engrais',tip:'Engrais riche en potassium-phosphore au débourrement'},{mois:[5,6],type:'autre',tip:'Soutenir les tiges florales avec des tuteurs discrets'},{mois:[10,11],type:'taille',tip:'Couper les tiges à 5 cm du sol après les premières gelées'},{mois:[9,10],type:'division',tip:'Période idéale pour diviser les touffes ou planter de nouveaux sujets'}]
+  },
+  'rose trémière':{
+    latin:'Alcea rosea',expo:'Plein soleil',floraison:'Juillet – Août',couleur:'Rose, rouge, blanc, jaune, noir-violet',
+    sol:'Drainant, ordinaire',arrosage:'Modéré',taille:'1,5–2,5 m',
+    type:'Bisannuelle ou vivace courte durée',croissance:'Rapide',longevite:'2–4 ans',etalement:'40–60 cm',
+    rusticite:'Rustique (-15°C)',parfum:'Non',
+    arrosage_detail:'Modéré. Résiste à la sécheresse une fois établie. Arroser au pied, jamais sur le feuillage.',
+    sol_detail:'Sol ordinaire, drainant. Supporte les sols pauvres. Évite les sols lourds et humides.',
+    plantation_detail:'Semer ou planter en juin-juillet à la place définitive (n\'aime pas être transplantée).',
+    taille_detail:'Couper les tiges florales après floraison pour favoriser la remontée. Supprimer les tiges en fin de saison.',
+    engrais:'Peu exigeant. Compost à la plantation suffit.',
+    bonsavoir:'Se ressème spontanément chaque année si on laisse quelques graines. Sensible à la rouille des mauves : éviter d\'arroser le feuillage et traiter si nécessaire.',
+    toxique:null,
+    tags:['Bisannuelle','Plein soleil','Grande hauteur'],
+    mult:[{method:'semis',periodStart:'Juin',periodEnd:'Juillet',tip:'Semer en place à la volée ou en godet, repiquer peu (n\'aime pas être déplacée)'},{method:'division',periodStart:'Mars',periodEnd:'Avril',tip:'Diviser les touffes âgées au printemps pour rajeunir'}],
+    actions:[{mois:[5,6],type:'semis',tip:'Semer directement en place pour floraison l\'année suivante'},{mois:[7,8],type:'autre',tip:'Supprimer les tiges fanées pour favoriser la remontée'},{mois:[9,10],type:'taille',tip:'Couper les tiges à la base après la floraison'}]
+  },
+  'bégonia nain':{
+    latin:'Begonia semperflorens',expo:'Mi-ombre (tolère plein soleil si bien arrosé)',floraison:'Juin – Octobre',couleur:'Rose, rouge, blanc',
+    sol:'Riche, humifère, frais',arrosage:'Régulier',taille:'20–30 cm',
+    type:'Annuelle',croissance:'Moyen',longevite:'1 an',etalement:'20–30 cm',
+    rusticite:'Gélive',parfum:'Non',
+    arrosage_detail:'Régulier, sol frais mais jamais détrempé. Ne pas arroser le soir. Éviter l\'excès d\'eau au collet.',
+    sol_detail:'Sol riche, humifère, léger. En pot : terreau universel + compost. Drainage indispensable.',
+    plantation_detail:'Repiquer après les gelées (mi-mai). Espacer de 20-25 cm.',
+    taille_detail:'Pas de taille nécessaire. Ne pas supprimer les fleurs fanées (chute naturelle).',
+    engrais:'Engrais plantes fleuries toutes les 2-3 semaines de juin à septembre.',
+    bonsavoir:'Plante annuelle sans entretien de taille. Arracher en automne après la première gelée. Peut être hivernée en pot à l\'abri.',
+    toxique:null,
+    tags:['Annuelle','Mi-ombre','Sans entretien'],
+    mult:[{method:'semis',periodStart:'Janvier',periodEnd:'Février',tip:'Semer les graines très fines en surface (ne pas couvrir), à 22-24°C sous verre, levée en 10-14 j'},{method:'bouturage',periodStart:'Août',periodEnd:'Septembre',tip:'Bouturer les tiges en fin d\'été pour hiverner et conserver la variété'}],
+    actions:[{mois:[0,1],type:'semis',tip:'Semer sous chaleur (22-24°C) en janvier-février pour avoir des plants en mai'},{mois:[4],type:'plantation',tip:'Repiquer après les gelées (mi-mai)'},{mois:[5,6,7,8,9],type:'engrais',tip:'Engrais plantes fleuries toutes les 2-3 semaines'},{mois:[9,10],type:'autre',tip:'Arracher après la première gelée ou rentrer en pot'}]
+  },
+  hortensia:{
+    latin:'Hydrangea macrophylla',expo:'Mi-ombre (soleil matin, ombre après-midi)',floraison:'Juin – Septembre',couleur:'Bleu, rose, blanc, mauve (selon pH du sol)',
+    sol:'Frais, riche, humifère, légèrement acide (pH 4,5–6)',arrosage:'Abondant',taille:'1–1,5 m',
+    type:'Arbuste caduc',croissance:'Rapide',longevite:'20–40 ans',etalement:'1–1,5 m',
+    rusticite:'Rustique (-15°C) mais sensible aux gelées tardives',parfum:'Légèrement parfumé',
+    arrosage_detail:'Abondant, 2-3 fois/semaine en été. Arroser au pied. Préférer l\'eau de pluie ou eau non calcaire. Pailler le pied pour retenir l\'humidité.',
+    sol_detail:'Sol frais, riche, profond, humifère. Légèrement acide (pH 4,5-6). Sol acide = fleurs bleues, alcalin = fleurs roses. Amender avec terre de bruyère pour bleuir.',
+    plantation_detail:'Planter en automne (idéal) ou printemps. Trou large 2× la motte. Mélanger avec compost. Pailler abondamment.',
+    taille_detail:'Taille légère en fin d\'hiver/début printemps. Supprimer les vieilles fleurs fanées. Ne couper que le bois mort et les vieilles tiges. Fleurit sur le bois de l\'année précédente : ne pas tailler trop court !',
+    engrais:'Engrais plantes fleuries ou azalées au printemps. Compost en automne. Pas d\'engrais trop riche en azote.',
+    bonsavoir:'Sol acide = fleurs bleues, sol alcalin = fleurs roses. Pour bleuir : ajouter de la terre de bruyère et du sulfate d\'aluminium. Toutes les parties sont légèrement toxiques (humains et animaux).',
+    toxique:'Toutes les parties légèrement toxiques. Tenir hors de portée des enfants et animaux.',
+    tags:['Arbuste','Mi-ombre','Floraison estivale'],
+    mult:[{method:'bouturage',periodStart:'Juin',periodEnd:'Septembre',tip:'Bouturer les tiges non fleuries : 2-3 nœuds, retirer feuilles du bas, sable+terreau, ombre et humidité'}],
+    actions:[{mois:[1,2],type:'taille',tip:'Taille légère : supprimer vieilles fleurs, bois mort. Ne pas tailler les belles tiges (fleurissent sur vieux bois)'},{mois:[3],type:'engrais',tip:'Engrais azalées ou plantes de terre de bruyère'},{mois:[4,5,6,7,8],type:'arrosage',tip:'Arroser abondamment 2-3 fois/semaine, eau de pluie de préférence'},{mois:[5,6,7,8,9],type:'bouturage',tip:'Peut se bouturer sur tiges non fleuries'},{mois:[10,11],type:'plantation',tip:'Meilleure période de plantation'},{mois:[10,11],type:'engrais',tip:'Compost au pied en automne'}]
+  }
+};
+
+// ── STATE ────────────────────────────────────────────────────────
+let plants=[],currentMassif=MASSIFS[0],editingId=null,viewingId=null;
+let currentNav='massifs',calViewMode='grid',multEntries=[],currentPhoto='';
+
+// ── SYNC STATUS ──────────────────────────────────────────────────
+function setSS(s,t){document.getElementById('sdot').className='sync-dot '+s;document.getElementById('sdot').title=t;}
+
+// ── SHEETS API ───────────────────────────────────────────────────
+async function fetchPlants(){
+  setSS('loading','Chargement…');
+  try{
+    const r=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}!A:R?key=${API_KEY}`);
+    const d=await r.json();
+    if(d.error)throw new Error(d.error.message);
+    const rows=d.values||[];
+    plants=[];
+    for(let i=1;i<rows.length;i++){
+      const row=rows[i];if(!row||!row[2])continue;
+      let mult=[];try{if(row[14])mult=JSON.parse(row[14]);}catch(e){}
+      plants.push({rowIndex:i+1,id:row[0]||String(i),massif:row[1]||'',nom:row[2]||'',latin:row[3]||'',expo:row[5]||'',floraison:row[6]||'',couleur:row[7]||'',sol:row[8]||'',arrosage:row[9]||'',taille:row[10]||'',notes:row[11]||'',photo:row[13]||'',mult,datesPlantation:row[15]||'',datesSemis:row[16]||'',datesTaille:row[17]||''});
+    }
+    setSS('ok',`Synchronisé · ${plants.length} plantes`);
+  }catch(e){setSS('err','Erreur : '+e.message);}
+}
+async function scriptCall(p){
+  const r=await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(p)});
+  try{return await r.json();}catch(e){return{ok:true};}
+}
+async function ensureHeaders(){
+  try{
+    const r=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}!A1?key=${API_KEY}`);
+    const d=await r.json();
+    if(!d.values)await scriptCall({action:'append',row:['ID','Massif','Nom commun','Nom latin','Date plantation','Exposition','Floraison','Couleur','Sol','Arrosage','Taille adulte','Notes','Image URL','Photo','Multiplication','Dates plantation','Dates semis','Dates taille']});
+  }catch(e){}
+}
+
+// ── NAVIGATION ───────────────────────────────────────────────────
+function showNav(nav){
+  currentNav=nav;
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.toggle('active',t.dataset.nav===nav));
+  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+nav));
+  closeMenu();
+  if(nav==='calendrier')renderCal();
+  if(nav==='mois')renderMois();
+}
+
+// ── MENU ─────────────────────────────────────────────────────────
+function openMenu(){document.getElementById('sideMenu').classList.add('open');document.getElementById('menuOverlay').classList.add('open');}
+function closeMenu(){document.getElementById('sideMenu').classList.remove('open');document.getElementById('menuOverlay').classList.remove('open');}
+
+// ── MASSIF TABS ──────────────────────────────────────────────────
+function renderTabs(){
+  document.getElementById('massifBar').innerHTML=MASSIFS.map(m=>{
+    const c=plants.filter(p=>p.massif===m).length;
+    return `<button class="massif-tab ${m===currentMassif?'active':''}" data-massif="${m}">${m} <span style="opacity:.4;font-size:11px">${c}</span></button>`;
+  }).join('');
+}
+
+async function renderGrid(){
+  document.getElementById('massifTitle').textContent=currentMassif;
+  const filtered=plants.filter(p=>p.massif===currentMassif);
+  document.getElementById('massifCount').textContent=filtered.length?`· ${filtered.length} plante${filtered.length>1?'s':''}`:' ';
+  const grid=document.getElementById('grid');
+  if(!filtered.length){grid.innerHTML=`<div class="empty" style="grid-column:1/-1">🌱<br><br>Aucune plante dans ce massif</div>`;return;}
+  grid.innerHTML=filtered.map(p=>{
+    const hasMult=p.mult&&p.mult.length;
+    return `<div class="card" data-id="${p.id}">
+      ${p.photo?`<img class="card-img" src="${p.photo}" alt="${p.nom}">`:`<div class="card-ph" id="ph_${p.id}">${getIcon(p.nom)}</div>`}
+      <div class="card-ov"></div>
+      <div class="card-body">
+        <div class="card-name">${p.nom}</div>
+        <div class="card-latin">${p.latin||''}</div>
+        <div class="card-tags">
+          ${p.floraison?`<span class="ptag ptag-g">${p.floraison}</span>`:''}
+          ${p.expo?`<span class="ptag ptag-y">${p.expo}</span>`:''}
+          ${hasMult?`<span class="ptag ptag-p">${p.mult.map(m=>MULT_ICONS[m.method]||'').join('')}</span>`:''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  filtered.filter(p=>!p.photo).forEach(async p=>{
+    const src=await fetchImg(p.nom,p.latin);if(!src)return;
+    const ph=document.getElementById('ph_'+p.id);if(!ph)return;
+    const img=document.createElement('img');img.className='card-img';img.src=src;img.alt=p.nom;
+    img.onerror=()=>img.remove();
+    ph.parentNode.insertBefore(img,ph);ph.style.display='none';
+  });
+}
+function selectMassif(m){currentMassif=m;renderTabs();renderGrid();}
+
+// ── BAR HELPER ───────────────────────────────────────────────────
+function bar(label,pct,color,valLabel){
+  return `<div class="bar-row"><div class="bar-label">${label}</div><div class="bar-wrap"><div class="bar-fill" style="width:${pct}%;background:${color}"></div></div><div class="bar-val">${valLabel}</div></div>`;
+}
+function arrosagePct(a){return{Faible:25,Modéré:50,Régulier:75,Abondant:100}[a]||50;}
+function expoToSoleil(e){if(!e)return 50;if(e.includes('Plein'))return 100;if(e.includes('ombre'))return 30;return 60;}
+
+// ── DETAIL ───────────────────────────────────────────────────────
+async function openDetail(id){
+  const p=plants.find(x=>x.id===id);if(!p)return;
+  viewingId=id;
+  const n=p.nom.toLowerCase();
+  let db=null;for(const[k,v]of Object.entries(DB)){if(n.includes(k)||k.includes(n)){db=v;break;}}
+  const info={...db,...Object.fromEntries(Object.entries({latin:p.latin,expo:p.expo,floraison:p.floraison,couleur:p.couleur,sol:p.sol,arrosage:p.arrosage,taille:p.taille,notes:p.notes}).filter(([,v])=>v))};
+  // Hero
+  const imgSrc=p.photo||(await fetchImg(p.nom,p.latin));
+  const hw=document.getElementById('detHero');
+  const ph=document.getElementById('detHeroPh');
+  if(imgSrc){
+    let img=hw.querySelector('img.det-hero');
+    if(!img){img=document.createElement('img');img.className='det-hero';hw.insertBefore(img,hw.querySelector('.det-hero-ov'));}
+    img.src=imgSrc;img.alt=p.nom;img.onerror=()=>{img.style.display='none';ph.style.display='flex';};
+    ph.style.display='none';
+  }else{ph.style.display='flex';ph.textContent=getIcon(p.nom);}
+  document.getElementById('detName').textContent=p.nom;
+  document.getElementById('detLatin').textContent=info.latin||'';
+  // Tags
+  const tagDefs=[
+    [info.type,'blue'],[info.rusticite?'Rustique '+info.rusticite.replace(/.*\(/,'('):'','green'],
+    [info.expo,'orange'],[info.floraison?'Fleurs '+info.floraison:'','green'],[info.parfum&&info.parfum!=='Non'?'Parfumé':'','purple']
+  ].filter(t=>t[0]);
+  document.getElementById('detTags').innerHTML=tagDefs.map(([l,c])=>`<span class="dtag dtag-${c}">${l}</span>`).join('');
+
+  const ap=arrosagePct(info.arrosage||'Modéré');
+  const sp=expoToSoleil(info.expo);
+  const mult=p.mult&&p.mult.length?p.mult:(db&&db.mult?db.mult:[]);
+  const actions=db&&db.actions?db.actions:[];
+
+  document.getElementById('detBody').innerHTML=`
+    ${info.type?`
+    <div class="det-section">
+      <div class="det-section-title">Caractéristiques générales</div>
+      <div class="det-grid2">
+        <div class="det-card">
+          <div class="det-card-title">📏 Dimensions</div>
+          ${info.taille?`<div class="det-row"><span class="det-row-label">Hauteur</span><span class="det-row-val">${info.taille}</span></div>`:''}
+          ${info.etalement?`<div class="det-row"><span class="det-row-label">Étalement</span><span class="det-row-val">${info.etalement}</span></div>`:''}
+          ${info.croissance?`<div class="det-row"><span class="det-row-label">Croissance</span><span class="det-row-val">${info.croissance}</span></div>`:''}
+          ${info.longevite?`<div class="det-row"><span class="det-row-label">Longévité</span><span class="det-row-val">${info.longevite}</span></div>`:''}
+        </div>
+        <div class="det-card">
+          <div class="det-card-title">🌸 Floraison</div>
+          ${info.floraison?`<div class="det-row"><span class="det-row-label">Période</span><span class="det-row-val">${info.floraison}</span></div>`:''}
+          ${info.couleur?`<div class="det-row"><span class="det-row-label">Couleurs</span><span class="det-row-val">${info.couleur}</span></div>`:''}
+          ${info.parfum?`<div class="det-row"><span class="det-row-label">Parfum</span><span class="det-row-val">${info.parfum}</span></div>`:''}
+          ${info.rusticite?`<div class="det-row"><span class="det-row-label">Rusticité</span><span class="det-row-val">${info.rusticite}</span></div>`:''}
+        </div>
+      </div>
+    </div>`:''}
+
+    <div class="det-section">
+      <div class="det-section-title">Besoins culturaux</div>
+      <div class="det-card">
+        ${bar('Arrosage',ap,'#3b82f6',info.arrosage||'—')}
+        ${bar('Soleil',sp,'#f59e0b',info.expo||'—')}
+        ${bar('Fertilisation',info.engrais?60:30,'#10b981',info.engrais?'Moyen':'Faible')}
+        ${bar('Rusticité',info.rusticite&&info.rusticite.includes('Très')?90:info.rusticite&&info.rusticite.includes('Sensible')?20:65,'#8b5cf6',info.rusticite&&info.rusticite.includes('Très')?'Élevée':info.rusticite&&info.rusticite.includes('Sensible')?'Faible':'Bonne')}
+      </div>
+    </div>
+
+    <div class="det-section">
+      <div class="det-section-title">Besoins détaillés</div>
+      <div class="det-grid2">
+        ${info.arrosage_detail?`<div class="info-card blue"><div class="info-card-title">💧 Arrosage</div><ul>${info.arrosage_detail.split('.').filter(s=>s.trim()).map(s=>`<li>${s.trim()}</li>`).join('')}</ul></div>`:''}
+        ${info.sol_detail||info.sol?`<div class="info-card green"><div class="info-card-title">☀️ Exposition & Sol</div><ul>${(info.sol_detail||info.sol).split('.').filter(s=>s.trim()).map(s=>`<li>${s.trim()}</li>`).join('')}</ul></div>`:''}
+      </div>
+    </div>
+
+    ${info.plantation_detail||info.taille_detail||info.engrais?`
+    <div class="det-section">
+      <div class="det-section-title">Plantation & Entretien</div>
+      <div class="det-grid3" style="grid-template-columns:${[info.plantation_detail,info.taille_detail,info.engrais].filter(Boolean).length===2?'1fr 1fr':'repeat(auto-fill,minmax(140px,1fr))'}">
+        ${info.plantation_detail?`<div class="det-card"><div class="det-card-title">🪴 Plantation</div><ul class="info-card" style="background:none;border:none;padding:0">${info.plantation_detail.split('.').filter(s=>s.trim()).map(s=>`<li>${s.trim()}</li>`).join('')}</ul></div>`:''}
+        ${info.taille_detail?`<div class="det-card"><div class="det-card-title">✂️ Taille</div><ul class="info-card" style="background:none;border:none;padding:0">${info.taille_detail.split('.').filter(s=>s.trim()).map(s=>`<li>${s.trim()}</li>`).join('')}</ul></div>`:''}
+        ${info.engrais?`<div class="det-card"><div class="det-card-title">🌿 Engrais</div><ul class="info-card" style="background:none;border:none;padding:0">${info.engrais.split('.').filter(s=>s.trim()).map(s=>`<li>${s.trim()}</li>`).join('')}</ul></div>`:''}
+      </div>
+    </div>`:''}
+
+    ${(p.datesPlantation||p.datesSemis||p.datesTaille)?`
+    <div class="det-section">
+      <div class="det-section-title">Mes dates</div>
+      ${p.datesPlantation?`<div style="margin-bottom:8px"><div class="det-section-title" style="border:none;font-size:10px;padding:0;margin-bottom:5px">🪴 Plantation</div><div class="date-badges">${p.datesPlantation.split(',').map(d=>`<span class="date-badge">${d.trim()}</span>`).join('')}</div></div>`:''}
+      ${p.datesSemis?`<div style="margin-bottom:8px"><div class="det-section-title" style="border:none;font-size:10px;padding:0;margin-bottom:5px">🌱 Semis</div><div class="date-badges">${p.datesSemis.split(',').map(d=>`<span class="date-badge">${d.trim()}</span>`).join('')}</div></div>`:''}
+      ${p.datesTaille?`<div style="margin-bottom:8px"><div class="det-section-title" style="border:none;font-size:10px;padding:0;margin-bottom:5px">✂️ Taille(s)</div><div class="date-badges">${p.datesTaille.split(',').map(d=>`<span class="date-badge">${d.trim()}</span>`).join('')}</div></div>`:''}
+    </div>`:''}
+
+    ${p.notes?`<div class="det-section"><div class="det-section-title">Notes personnelles</div><div class="info-card green"><ul><li>${p.notes}</li></ul></div></div>`:''}
+
+    ${info.bonsavoir?`
+    <div class="det-section">
+      <div class="det-section-title">Bon à savoir</div>
+      <div class="info-card green" style="margin-bottom:${info.toxique?'8px':'0'}">
+        <div class="info-card-title">💡 Astuce</div>
+        <ul>${info.bonsavoir.split('.').filter(s=>s.trim()).map(s=>`<li>${s.trim()}</li>`).join('')}</ul>
+      </div>
+      ${info.toxique?`<div class="info-card red"><div class="info-card-title">⚠️ Attention</div><ul><li>${info.toxique}</li></ul></div>`:''}
+    </div>`:''}
+
+    ${mult.length?`
+    <div class="det-section">
+      <div class="det-section-title">Multiplication</div>
+      ${mult.map(m=>`<div class="mult-row">
+        <span class="mult-badge" style="background:${MULT_COLORS[m.method]};color:${MULT_TEXT[m.method]}">${MULT_ICONS[m.method]} ${m.method}</span>
+        <div>
+          <div class="mult-info-period">📅 ${m.periodStart}${m.periodEnd&&m.periodEnd!==m.periodStart?' – '+m.periodEnd:''}</div>
+          ${m.tip?`<div class="mult-info-tip">${m.tip}</div>`:''}
+        </div>
+      </div>`).join('')}
+    </div>`:''}
+  `;
+  document.getElementById('detOverlay').classList.add('open');
+}
+
+function editFromDetail(){
+  closeOverlay('detOverlay');
+  const p=plants.find(x=>x.id===viewingId);if(!p)return;
+  editingId=p.id;multEntries=p.mult?[...p.mult.map(m=>({...m}))]:[];currentPhoto=p.photo||'';
+  document.getElementById('addTitle').textContent='Modifier la plante';
+  document.getElementById('btnDel').style.display='inline-flex';
+  document.getElementById('fNom').value=p.nom||'';document.getElementById('fLatin').value=p.latin||'';
+  document.getElementById('fMassif').value=p.massif||currentMassif;
+  document.getElementById('fExpo').value=p.expo||'';document.getElementById('fArro').value=p.arrosage||'';
+  document.getElementById('fFlor').value=p.floraison||'';document.getElementById('fCoul').value=p.couleur||'';
+  document.getElementById('fSol').value=p.sol||'';document.getElementById('fTaille').value=p.taille||'';
+  document.getElementById('fNotes').value=p.notes||'';
+  document.getElementById('fDatesPlantation').value=p.datesPlantation||'';
+  document.getElementById('fDatesSemis').value=p.datesSemis||'';
+  document.getElementById('fDatesTaille').value=p.datesTaille||'';
+  if(p.photo){const pr=document.getElementById('photoPreview');pr.src=p.photo;pr.style.display='block';document.getElementById('photoLabel').textContent='📷 Changer la photo';}
+  renderMultFields();
+  document.getElementById('addOverlay').classList.add('open');
+}
+
+// ── FORM ─────────────────────────────────────────────────────────
+function populateMassifSelect(){document.getElementById('fMassif').innerHTML=MASSIFS.map(m=>`<option value="${m}">${m}</option>`).join('');}
+
+function openAdd(){
+  editingId=null;multEntries=[];currentPhoto='';
+  document.getElementById('addTitle').textContent='Ajouter une plante';
+  document.getElementById('btnDel').style.display='none';
+  ['fNom','fLatin','fFlor','fCoul','fSol','fTaille','fNotes','fDatesPlantation','fDatesSemis','fDatesTaille'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fExpo').value='';document.getElementById('fArro').value='';
+  document.getElementById('fMassif').value=currentMassif;
+  const pr=document.getElementById('photoPreview');pr.src='';pr.style.display='none';
+  document.getElementById('photoLabel').textContent='📷 Ajouter une photo · cliquer ou glisser';
+  renderMultFields();
+  document.getElementById('addOverlay').classList.add('open');
+}
+
+function renderMultFields(){
+  const c=document.getElementById('multFields');
+  if(!multEntries.length){c.innerHTML='<p style="font-size:13px;color:var(--cream3);margin-bottom:.875rem">Aucune méthode · clique sur + pour ajouter</p>';return;}
+  c.innerHTML=multEntries.map((m,i)=>`
+    <div class="mult-form-block">
+      <div class="mult-form-title">
+        ${MULT_ICONS[m.method]||'🌱'} ${m.method.charAt(0).toUpperCase()+m.method.slice(1)}
+        <button onclick="removeMult(${i})" style="margin-left:auto;background:none;border:none;cursor:pointer;color:var(--cream3);font-size:16px">✕</button>
+      </div>
+      <div class="row2" style="margin-bottom:8px">
+        <div class="field" style="margin-bottom:0"><label>Début</label>
+          <select onchange="multEntries[${i}].periodStart=this.value"><option value="">—</option>${MOIS_NOM.map(mo=>`<option value="${mo}" ${m.periodStart===mo?'selected':''}>${mo}</option>`).join('')}</select>
+        </div>
+        <div class="field" style="margin-bottom:0"><label>Fin</label>
+          <select onchange="multEntries[${i}].periodEnd=this.value"><option value="">—</option>${MOIS_NOM.map(mo=>`<option value="${mo}" ${m.periodEnd===mo?'selected':''}>${mo}</option>`).join('')}</select>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:0"><label>Conseil</label>
+        <input value="${m.tip||''}" placeholder="Substrat, température, durée…" oninput="multEntries[${i}].tip=this.value">
+      </div>
+    </div>`).join('');
+}
+function addMult(m){multEntries.push({method:m,periodStart:'',periodEnd:'',tip:''});renderMultFields();}
+function removeMult(i){multEntries.splice(i,1);renderMultFields();}
+
+// ── PHOTO ────────────────────────────────────────────────────────
+function handlePhoto(file){
+  if(!file)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    currentPhoto=e.target.result;
+    const pr=document.getElementById('photoPreview');pr.src=currentPhoto;pr.style.display='block';
+    document.getElementById('photoLabel').textContent='📷 Changer la photo';
+  };
+  r.readAsDataURL(file);
+}
+
+// ── AI GENERATE ──────────────────────────────────────────────────
+async function generateFiche(){
+  const nom=document.getElementById('fNom').value.trim();
+  if(!nom){showToast('Entre le nom d\'abord');return;}
+  const btn=document.getElementById('btnGen');btn.disabled=true;btn.innerHTML='<span class="spin"></span> Génération…';
+  const n=nom.toLowerCase();
+  let info=null;for(const[k,v]of Object.entries(DB)){if(n.includes(k)||k.includes(n)){info=v;break;}}
+  if(info){
+    if(info.latin&&!document.getElementById('fLatin').value)document.getElementById('fLatin').value=info.latin;
+    if(info.expo&&!document.getElementById('fExpo').value)document.getElementById('fExpo').value=info.expo;
+    if(info.floraison&&!document.getElementById('fFlor').value)document.getElementById('fFlor').value=info.floraison;
+    if(info.couleur&&!document.getElementById('fCoul').value)document.getElementById('fCoul').value=info.couleur;
+    if(info.sol&&!document.getElementById('fSol').value)document.getElementById('fSol').value=info.sol;
+    if(info.arrosage&&!document.getElementById('fArro').value)document.getElementById('fArro').value=info.arrosage;
+    if(info.taille&&!document.getElementById('fTaille').value)document.getElementById('fTaille').value=info.taille;
+    if(!multEntries.length&&info.mult)multEntries=[...info.mult.map(m=>({...m}))];
+    renderMultFields();showToast('✦ Fiche générée !');
+  }else showToast('Plante non reconnue · remplis manuellement');
+  btn.disabled=false;btn.innerHTML='✦ Générer la fiche automatiquement';
+}
+
+// ── SAVE ─────────────────────────────────────────────────────────
+async function savePlant(){
+  const nom=document.getElementById('fNom').value.trim();
+  if(!nom){showToast('Le nom est obligatoire');return;}
+  const btn=document.getElementById('btnSave');btn.innerHTML='<span class="spin"></span>';btn.disabled=true;
+  const row=[
+    editingId||Date.now().toString(36),
+    document.getElementById('fMassif').value,nom,
+    document.getElementById('fLatin').value,'',
+    document.getElementById('fExpo').value,document.getElementById('fFlor').value,
+    document.getElementById('fCoul').value,document.getElementById('fSol').value,
+    document.getElementById('fArro').value,document.getElementById('fTaille').value,
+    document.getElementById('fNotes').value,'',currentPhoto,
+    JSON.stringify(multEntries),'',
+    document.getElementById('fDatesPlantation').value,
+    document.getElementById('fDatesSemis').value,
+    document.getElementById('fDatesTaille').value
+  ];
+  try{
+    if(editingId){const p=plants.find(x=>x.id===editingId);if(p)await scriptCall({action:'update',rowIndex:p.rowIndex,row});}
+    else await scriptCall({action:'append',row});
+    currentMassif=row[1];closeOverlay('addOverlay');showToast(editingId?'Modifiée ✓':'Ajoutée ✓');await syncNow();
+  }catch(e){showToast('Erreur : '+e.message);}
+  btn.innerHTML='Enregistrer';btn.disabled=false;
+}
+
+async function deletePlant(){
+  if(!editingId||!confirm('Supprimer cette plante ?'))return;
+  const p=plants.find(x=>x.id===editingId);
+  if(p){await scriptCall({action:'clear',rowIndex:p.rowIndex});closeOverlay('addOverlay');showToast('Supprimée');await syncNow();}
+}
+
+// ── CALENDAR MULT ─────────────────────────────────────────────────
+function parseMois(start,end){
+  if(!start)return[];
+  const si=MOIS_NOM.findIndex(m=>m===start);
+  const ei=end?MOIS_NOM.findIndex(m=>m===end):-1;
+  if(si<0)return[];
+  if(ei<0||ei===si)return[si];
+  const res=[];let cur=si;
+  while(true){res.push(cur);if(cur===ei)break;cur=(cur+1)%12;if(res.length>12)break;}
+  return res;
+}
+
+function getMultEntries(){
+  const method=document.getElementById('filterMethod').value;
+  const entries=[];
+  plants.forEach(p=>{
+    const src=(p.mult&&p.mult.length)?p.mult:((()=>{const n=p.nom.toLowerCase();for(const[k,v]of Object.entries(DB)){if((n.includes(k)||k.includes(n))&&v.mult)return v.mult;}return[];})());
+    src.forEach(m=>{
+      if(method&&m.method!==method)return;
+      entries.push({plant:p,method:m.method,periodStart:m.periodStart,periodEnd:m.periodEnd,tip:m.tip,mois:parseMois(m.periodStart,m.periodEnd)});
+    });
+  });
+  return entries;
+}
+
+function renderCal(){
+  const entries=getMultEntries();
+  if(calViewMode==='grid')renderCalGrid(entries);
+  else renderCalList(entries);
+}
+
+function renderCalGrid(entries){
+  const now=new Date().getMonth();
+  const byM=Array.from({length:12},()=>[]);
+  entries.forEach(e=>e.mois.forEach(m=>byM[m].push(e)));
+  document.getElementById('calView').innerHTML=`<div class="cal-grid12">${MOIS_NOM.map((m,i)=>`
+    <div class="cal-month ${i===now?'now':''}">
+      <div class="cal-month-hdr">${m}${i===now?' 📍':''}<span style="font-size:11px;opacity:.6">${byM[i].length||''}</span></div>
+      <div class="cal-month-body">${byM[i].length?byM[i].map(e=>`<div class="cal-entry ce-${e.method}" data-id="${e.plant.id}">${MULT_ICONS[e.method]} ${e.plant.nom}</div>`).join(''):'<span style="font-size:11px;color:#555">—</span>'}</div>
+    </div>`).join('')}</div>`;
+}
+
+function renderCalList(entries){
+  const now=new Date().getMonth();
+  const byM=Array.from({length:12},()=>[]);
+  entries.forEach(e=>e.mois.forEach(m=>byM[m].push(e)));
+  const order=[...Array(12).keys()].map(i=>(i+now)%12);
+  document.getElementById('calView').innerHTML='<div>'+order.filter(i=>byM[i].length).map(i=>`
+    <div class="cal-list-month ${i===now?'now':''}">
+      <div class="cal-list-hdr"><span class="cal-list-hdr-name">${MOIS_NOM[i]}${i===now?' 📍':''}</span><span class="cal-list-hdr-badge">${byM[i].length}</span></div>
+      <div class="cal-list-body">${byM[i].map(e=>`
+        <div class="cal-list-entry" data-id="${e.plant.id}">
+          <div class="cle-icon" style="background:${MULT_COLORS[e.method]}">${MULT_ICONS[e.method]}</div>
+          <div class="cle-info"><div class="cle-name">${e.plant.nom}</div><div class="cle-detail">${e.tip||''}</div></div>
+          <span class="cle-badge" style="background:${MULT_COLORS[e.method]};color:${MULT_TEXT[e.method]}">${e.method}</span>
+        </div>`).join('')}
+      </div>
+    </div>`).join('')+'</div>';
+}
+
+// ── CE MOIS-CI ────────────────────────────────────────────────────
+function initMoisFilter(){
+  const sel=document.getElementById('filterMois');
+  const now=new Date().getMonth();
+  sel.innerHTML='<option value="">Ce mois-ci</option>'+MOIS_NOM.map((m,i)=>`<option value="${i}" ${i===now?'selected':''}>${m}</option>`).join('');
+  document.getElementById('moisCourant').textContent='· '+MOIS_NOM[now];
+}
+
+function renderMois(){
+  const moisVal=document.getElementById('filterMois').value;
+  const moisIdx=moisVal===''?new Date().getMonth():parseInt(moisVal);
+  const actionFilter=document.getElementById('filterAction').value;
+  document.getElementById('moisCourant').textContent='· '+MOIS_NOM[moisIdx];
+
+  // Gather all actions for this month from DB
+  const entries=[];
+  plants.forEach(p=>{
+    const n=p.nom.toLowerCase();
+    let db=null;for(const[k,v]of Object.entries(DB)){if(n.includes(k)||k.includes(n)){db=v;break;}}
+    if(!db||!db.actions)return;
+    db.actions.forEach(a=>{
+      if(!a.mois.includes(moisIdx))return;
+      if(actionFilter&&a.type!==actionFilter)return;
+      entries.push({plant:p,type:a.type,tip:a.tip});
+    });
+    // Also mult
+    const src=(p.mult&&p.mult.length)?p.mult:(db.mult||[]);
+    src.forEach(m=>{
+      const mois=parseMois(m.periodStart,m.periodEnd);
+      if(!mois.includes(moisIdx))return;
+      if(actionFilter&&actionFilter!==m.method&&actionFilter!=='bouturage'&&actionFilter!=='semis')return;
+      if(!actionFilter||actionFilter===m.method)
+        entries.push({plant:p,type:m.method,tip:m.tip||m.method+' possible ce mois-ci'});
+    });
+  });
+
+  if(!entries.length){
+    document.getElementById('moisView').innerHTML=`<div class="empty">😴<br><br>Pas d'actions prévues ce mois-ci<br><span style="font-size:13px">Profites-en pour observer ton jardin !</span></div>`;
+    return;
+  }
+
+  // Group by action type
+  const byType={};
+  entries.forEach(e=>{if(!byType[e.type])byType[e.type]=[];byType[e.type].push(e);});
+  document.getElementById('moisView').innerHTML=Object.entries(byType).map(([type,items])=>`
+    <div class="cal-list-month" style="margin-bottom:10px">
+      <div class="cal-list-hdr" style="background:${ACTION_BG[type]||'var(--bg3)'}">
+        <span class="cal-list-hdr-name">${ACTION_ICONS[type]||'📝'} ${type.charAt(0).toUpperCase()+type.slice(1)}</span>
+        <span class="cal-list-hdr-badge">${items.length}</span>
+      </div>
+      <div class="cal-list-body">${items.map(e=>`
+        <div class="cal-list-entry" data-id="${e.plant.id}">
+          <div class="cle-icon">${getIcon(e.plant.nom)}</div>
+          <div class="cle-info"><div class="cle-name">${e.plant.nom}</div><div class="cle-detail">${e.tip||''}</div></div>
+        </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────
+function closeOverlay(id){document.getElementById(id).classList.remove('open');}
+async function syncNow(){await fetchPlants();renderTabs();await renderGrid();if(currentNav==='calendrier')renderCal();if(currentNav==='mois')renderMois();}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+
+// ── EVENT LISTENERS ───────────────────────────────────────────────
+document.querySelectorAll('.nav-tab').forEach(t=>t.addEventListener('click',()=>showNav(t.dataset.nav)));
+document.querySelectorAll('[data-goto]').forEach(t=>t.addEventListener('click',()=>showNav(t.dataset.goto)));
+document.getElementById('btnMenu').addEventListener('click',openMenu);
+document.getElementById('btnCloseMenu').addEventListener('click',closeMenu);
+document.getElementById('menuOverlay').addEventListener('click',closeMenu);
+document.getElementById('menuBtnAdd').addEventListener('click',()=>{closeMenu();openAdd();});
+document.getElementById('menuBtnSync').addEventListener('click',()=>{closeMenu();syncNow();});
+document.getElementById('btnLogoHome').addEventListener('click',()=>showNav('massifs'));
+document.getElementById('massifBar').addEventListener('click',e=>{const t=e.target.closest('[data-massif]');if(t)selectMassif(t.dataset.massif);});
+document.getElementById('grid').addEventListener('click',e=>{const c=e.target.closest('[data-id]');if(c)openDetail(c.dataset.id);});
+document.getElementById('calView').addEventListener('click',e=>{const c=e.target.closest('[data-id]');if(c){closeOverlay('detOverlay');openDetail(c.dataset.id);}});
+document.getElementById('moisView').addEventListener('click',e=>{const c=e.target.closest('[data-id]');if(c){closeOverlay('detOverlay');openDetail(c.dataset.id);}});
+document.getElementById('btnEdit').addEventListener('click',editFromDetail);
+document.getElementById('btnCloseDet').addEventListener('click',()=>closeOverlay('detOverlay'));
+document.getElementById('btnCloseAdd').addEventListener('click',()=>closeOverlay('addOverlay'));
+document.getElementById('btnCancelAdd').addEventListener('click',()=>closeOverlay('addOverlay'));
+document.getElementById('btnSave').addEventListener('click',savePlant);
+document.getElementById('btnDel').addEventListener('click',deletePlant);
+document.getElementById('btnGen').addEventListener('click',generateFiche);
+document.getElementById('btnCalGrid').addEventListener('click',()=>{calViewMode='grid';document.getElementById('btnCalGrid').classList.add('active');document.getElementById('btnCalList').classList.remove('active');renderCal();});
+document.getElementById('btnCalList').addEventListener('click',()=>{calViewMode='list';document.getElementById('btnCalList').classList.add('active');document.getElementById('btnCalGrid').classList.remove('active');renderCal();});
+document.getElementById('filterMethod').addEventListener('change',renderCal);
+document.getElementById('filterMois').addEventListener('change',()=>{const v=document.getElementById('filterMois').value;document.getElementById('moisCourant').textContent='· '+(v===''?MOIS_NOM[new Date().getMonth()]:MOIS_NOM[parseInt(v)]);renderMois();});
+document.getElementById('filterAction').addEventListener('change',renderMois);
+document.getElementById('multAddBtns').addEventListener('click',e=>{const b=e.target.closest('[data-addmult]');if(b)addMult(b.dataset.addmult);});
+document.getElementById('photoZone').addEventListener('click',()=>document.getElementById('photoInput').click());
+document.getElementById('photoInput').addEventListener('change',e=>handlePhoto(e.target.files[0]));
+document.getElementById('photoZone').addEventListener('dragover',e=>{e.preventDefault();e.currentTarget.style.borderColor='var(--green)';});
+document.getElementById('photoZone').addEventListener('dragleave',e=>{e.currentTarget.style.borderColor='';});
+document.getElementById('photoZone').addEventListener('drop',e=>{e.preventDefault();e.currentTarget.style.borderColor='';handlePhoto(e.dataTransfer.files[0]);});
+
+// ── INIT ──────────────────────────────────────────────────────────
+async function init(){
+  populateMassifSelect();
+  initMoisFilter();
+  await ensureHeaders();
+  await syncNow();
+}
+init();
+</script>
+</body>
+</html>
