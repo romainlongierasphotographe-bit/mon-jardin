@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a2e1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mon Jardin">
+<title>Mon Jardin</title>
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--gd:#1a2e1a;--gm:#2d4f2d;--ga:#4a8c4a;--gl:#7ab87a;--cream:#f5f0e8;--cd:#e8e0d0;--td:#1a1a1a;--tm:#4a4a4a;--tl:#8a8a8a;--r:14px;--rs:8px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--td);min-height:100vh}
+header{background:var(--gd);padding:1rem 1.25rem 0;position:sticky;top:0;z-index:30}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+.logo{font-family:'Playfair Display',serif;font-size:21px;color:var(--cream);display:flex;align-items:center;gap:10px}
+.logo-leaf{width:24px;height:24px;background:var(--ga);border-radius:50% 50% 50% 0;transform:rotate(-45deg);flex-shrink:0}
+.hactions{display:flex;gap:8px}
+.bicon{width:36px;height:36px;border-radius:var(--rs);border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:var(--cream);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
+.bicon:hover{background:rgba(255,255,255,0.18)}
+.badd{height:36px;padding:0 14px;border-radius:var(--rs);border:none;background:var(--ga);color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px}
+.badd:hover{background:var(--gl)}
+.sync-bar{display:flex;align-items:center;gap:7px;padding:.4rem 0 .6rem;font-size:11px;color:rgba(245,240,232,0.55)}
+.sdot{width:6px;height:6px;border-radius:50%;background:#888;flex-shrink:0;transition:background .3s}
+.sdot.ok{background:var(--gl)}.sdot.err{background:#e07070}.sdot.loading{background:#f0c040;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.tabs-bar{display:flex;overflow-x:auto;scrollbar-width:none}
+.tabs-bar::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:8px 16px 10px;font-size:13px;color:rgba(245,240,232,0.5);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
+.tab:hover{color:var(--cream)}.tab.active{color:var(--cream);border-bottom-color:var(--gl);font-weight:500}
+main{padding:1.25rem;max-width:960px;margin:0 auto}
+.stitle{font-family:'Playfair Display',serif;font-size:18px;color:var(--gd);margin-bottom:1rem;display:flex;align-items:baseline;gap:8px}
+.scount{font-family:'DM Sans',sans-serif;font-size:12px;color:var(--tl);font-weight:400}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.card{border-radius:var(--r);overflow:hidden;cursor:pointer;position:relative;aspect-ratio:3/4;background:var(--gm);transition:transform .18s,box-shadow .18s;box-shadow:0 4px 20px rgba(0,0,0,0.12)}
+.card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,0.2)}
+.card-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .4s}
+.card:hover .card-img{transform:scale(1.05)}
+.card-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:48px;background:linear-gradient(135deg,var(--gm),var(--gd))}
+.card-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(8,16,8,0.88) 0%,rgba(8,16,8,0.2) 55%,transparent 100%)}
+.card-body{position:absolute;bottom:0;left:0;right:0;padding:.75rem}
+.card-name{font-family:'Playfair Display',serif;font-size:14px;color:#fff;line-height:1.25;margin-bottom:3px}
+.card-latin{font-size:10px;color:rgba(255,255,255,0.5);font-style:italic;margin-bottom:5px}
+.card-tags{display:flex;flex-wrap:wrap;gap:3px}
+.tag{font-size:10px;padding:2px 6px;border-radius:99px;font-weight:500}
+.tflor{background:rgba(122,184,122,0.28);color:#c8f0c8;border:1px solid rgba(122,184,122,0.3)}
+.texpo{background:rgba(250,200,80,0.2);color:#fde090;border:1px solid rgba(250,200,80,0.25)}
+.empty{grid-column:1/-1;text-align:center;padding:3rem 1rem;color:var(--tl)}
+.empty-icon{font-size:36px;margin-bottom:10px;opacity:.3}
+/* overlays */
+.overlay{display:none;position:fixed;inset:0;background:rgba(10,20,10,0.65);z-index:100;align-items:flex-start;justify-content:center;padding:1rem;overflow-y:auto}
+.overlay.open{display:flex}
+.modal{background:#fff;border-radius:var(--r);width:100%;max-width:480px;padding:1.5rem;margin:auto}
+.mhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.mtitle{font-family:'Playfair Display',serif;font-size:18px;color:var(--gd)}
+.bx{background:none;border:none;font-size:20px;cursor:pointer;color:var(--tl);padding:2px 5px}
+.bx:hover{color:var(--td)}
+.field{margin-bottom:.875rem}
+.field label{display:block;font-size:11px;color:var(--tl);margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em;font-weight:500}
+.field input,.field select,.field textarea{width:100%;border-radius:var(--rs);border:1px solid var(--cd);padding:8px 10px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--td);background:#fff;transition:border-color .15s}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--ga)}
+.field textarea{min-height:72px;resize:vertical}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mactions{display:flex;gap:8px;justify-content:flex-end;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--cd)}
+.btn{padding:8px 16px;border-radius:var(--rs);font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-weight:500;transition:all .15s}
+.btn-o{background:#fff;border:1px solid var(--cd);color:var(--tm)}.btn-o:hover{border-color:var(--ga);color:var(--ga)}
+.btn-g{background:var(--ga);border:none;color:#fff}.btn-g:hover{background:var(--gm)}
+.btn-r{background:#fff;border:1px solid #f0a0a0;color:#c0392b;margin-right:auto}.btn-r:hover{background:#fff5f5}
+.btn-ai{background:var(--gd);border:none;color:var(--cream);width:100%;justify-content:center;margin-bottom:.75rem}
+.btn-ai:hover{background:var(--gm)}.btn-ai:disabled{opacity:.5;cursor:not-allowed}
+.ai-hint{font-size:11px;color:var(--tl);text-align:center;margin-bottom:1rem;margin-top:-.4rem}
+/* detail */
+.det-hero{width:100%;height:220px;object-fit:cover;border-radius:var(--rs);margin-bottom:1rem}
+.det-ph{width:100%;height:160px;border-radius:var(--rs);background:linear-gradient(135deg,var(--gm),var(--gd));display:flex;align-items:center;justify-content:center;font-size:56px;margin-bottom:1rem}
+.det-section{margin-bottom:1.25rem}
+.det-section-title{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--tl);font-weight:500;margin-bottom:.6rem;padding-bottom:.4rem;border-bottom:1px solid var(--cd)}
+.det-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.df{padding:8px 10px;background:var(--cream);border-radius:var(--rs)}
+.dl{font-size:10px;color:var(--tl);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.dv{font-size:13px;color:var(--td);line-height:1.4}
+.det-notes{background:var(--cream);border-radius:var(--rs);padding:12px;font-size:13px;color:var(--tm);line-height:1.7}
+.det-conseils{background:#f0f8f0;border-radius:var(--rs);padding:12px;font-size:13px;color:var(--gm);line-height:1.7;border-left:3px solid var(--ga)}
+.conseils-item{display:flex;gap:6px;margin-bottom:4px}
+.conseils-item:last-child{margin-bottom:0}
+/* toast */
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--gd);color:var(--cream);padding:10px 20px;border-radius:99px;font-size:13px;z-index:200;transition:transform .3s;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.spin{width:15px;height:15px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-top">
+    <div class="logo"><div class="logo-leaf"></div>Mon Jardin</div>
+    <div class="hactions">
+      <button class="bicon" id="btnSync" title="Synchroniser">↻</button>
+      <button class="badd" id="btnAdd">＋ Ajouter</button>
+    </div>
+  </div>
+  <div class="sync-bar"><div class="sdot" id="sdot"></div><span id="stext">Connexion…</span></div>
+  <div class="tabs-bar" id="tabs"></div>
+</header>
+<main>
+  <div class="stitle"><span id="massifTitle"></span><span class="scount" id="massifCount"></span></div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<!-- Modal ajout/modif -->
+<div class="overlay" id="addOverlay">
+  <div class="modal">
+    <div class="mhdr">
+      <span class="mtitle" id="addTitle">Ajouter une plante</span>
+      <button class="bx" id="btnCloseAdd">✕</button>
+    </div>
+    <div class="field"><label>Nom commun *</label><input id="fNom" placeholder="Dahlia, Rosier…"></div>
+    <button class="btn btn-ai" id="btnGen">✦ Générer la fiche automatiquement</button>
+    <p class="ai-hint">Entre le nom · clique Générer · corrige si besoin</p>
+    <div class="field"><label>Nom latin</label><input id="fLatin" placeholder="Dahlia pinnata"></div>
+    <div class="field"><label>Massif</label><select id="fMassif"></select></div>
+    <div class="row2">
+      <div class="field"><label>Date de plantation</label><input id="fDate" type="date"></div>
+      <div class="field"><label>Exposition</label>
+        <select id="fExpo"><option value="">—</option><option>Plein soleil</option><option>Mi-ombre</option><option>Ombre</option></select>
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Floraison</label><input id="fFlor" placeholder="Juin – Oct."></div>
+      <div class="field"><label>Couleur</label><input id="fCoul" placeholder="Rouge, rose…"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Type de sol</label><input id="fSol" placeholder="Drainant…"></div>
+      <div class="field"><label>Arrosage</label>
+        <select id="fArro"><option value="">—</option><option>Faible</option><option>Modéré</option><option>Régulier</option><option>Abondant</option></select>
+      </div>
+    </div>
+    <div class="field"><label>Taille adulte</label><input id="fTaille" placeholder="60 cm – 1 m"></div>
+    <div class="field"><label>Notes personnelles</label><textarea id="fNotes" placeholder="Observations, entretien spécifique…"></textarea></div>
+    <div class="mactions">
+      <button class="btn btn-r" id="btnDel" style="display:none">🗑 Supprimer</button>
+      <button class="btn btn-o" id="btnCancelAdd">Annuler</button>
+      <button class="btn btn-g" id="btnSave">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal détail -->
+<div class="overlay" id="detOverlay">
+  <div class="modal">
+    <div class="mhdr">
+      <span class="mtitle" id="detTitle"></span>
+      <button class="bx" id="btnCloseDet">✕</button>
+    </div>
+    <div id="detBody"></div>
+    <div class="mactions">
+      <button class="btn btn-o" id="btnEdit">✎ Modifier</button>
+      <button class="btn btn-g" id="btnCloseDet2">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────────────────────
+const SHEET_ID   = '1Hp0J2iwvFoSwqwd2nrlR0ILUfDx57y27-mMLxOeG2-U';
+const API_KEY    = 'AIzaSyCsMZVzrkRchl6Yqrz8X8d9bM07yycom54';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwKVTE1Fk4voP3OEZgRvpcUyzOP2YwuTXoT9us3OIiMmvjIIDpTdW8IVEFau5Z9nApXvg/exec';
+const SHEET_NAME = 'Plantes';
+const MASSIFS    = ["Demi Lune", "Allée d'Agrumes", "Le Central"];
+// ────────────────────────────────────────────────────────────────────────────
+
+const ICONS = {dahlia:'🌸',surfinia:'🌺',oeillet:'🌼',saule:'🌿',olivier:'🫒',citron:'🍋',pamplemousse:'🍊',oranger:'🍊',rosier:'🌹',rose:'🌹',sauge:'🌿',pivoine:'🌸',tremiere:'🌻',begonia:'🌺',lavande:'💜',hortensia:'💐',jasmin:'🌼',iris:'🌸',tulipe:'🌷',fougere:'🌿',bambou:'🎋',mimosa:'🌼',magnolia:'🌸'};
+
+// Wikipedia article names per plant (for image API)
+const WIKI_TITLES = {
+  'dahlia':'Dahlia pinnata','surfinia':'Petunia hybrida','oeillet de poète':'Dianthus barbatus',
+  'oeillet':'Dianthus caryophyllus','saule crevette':'Salix integra','olivier':'Olea europaea',
+  'citron 4 saison':'Citrus limon','citron':'Citrus limon','pamplemousse':'Citrus maxima',
+  'citron caviar':'Microcitrus australasica','citron vert':'Citrus aurantiifolia',
+  'oranger':'Citrus sinensis','rosier':'Rosa gallica','sauge perroquet':'Salvia elegans',
+  'pivoine':'Paeonia lactiflora','rose trémière':'Alcea rosea','bégonia nain':'Begonia semperflorens',
+  'lavande':'Lavandula angustifolia','hortensia':'Hydrangea macrophylla',
+  'tulipe':'Tulipa gesneriana','iris':'Iris germanica','mimosa':'Acacia dealbata','magnolia':'Magnolia grandiflora'
+};
+
+const imgCache = {};
+
+function getIcon(nom) {
+  if (!nom) return '🌱';
+  const n = nom.toLowerCase();
+  for (const [k,v] of Object.entries(ICONS)) { if (n.includes(k)) return v; }
+  return '🌱';
+}
+
+function getWikiTitle(nom, latin) {
+  if (latin && latin.trim()) return latin.trim();
+  if (!nom) return null;
+  const n = nom.toLowerCase();
+  for (const [k,v] of Object.entries(WIKI_TITLES)) { if (n.includes(k)||k.includes(n)) return v; }
+  return nom;
+}
+
+async function fetchImg(nom, latin) {
+  const title = getWikiTitle(nom, latin);
+  if (!title) return null;
+  if (imgCache[title] !== undefined) return imgCache[title];
+  try {
+    const url = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=pageimages&format=json&pithumbsize=500&origin=*`;
+    const r = await fetch(url);
+    const d = await r.json();
+    const page = Object.values(d.query.pages)[0];
+    const src = page?.thumbnail?.source || null;
+    imgCache[title] = src;
+    return src;
+  } catch(e) { imgCache[title]=null; return null; }
+}
+
+// ── State ────────────────────────────────────────────────────────────────────
+let plants=[], currentMassif=MASSIFS[0], editingId=null, viewingId=null;
+
+// ── Sync status ───────────────────────────────────────────────────────────────
+function setSS(state,text){ document.getElementById('sdot').className='sdot '+state; document.getElementById('stext').textContent=text; }
+
+// ── Sheets read ───────────────────────────────────────────────────────────────
+async function fetchPlants() {
+  setSS('loading','Chargement…');
+  try {
+    const r = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}!A:M?key=${API_KEY}`);
+    const d = await r.json();
+    if (d.error) throw new Error(d.error.message);
+    const rows = d.values||[];
+    plants = [];
+    for (let i=1;i<rows.length;i++) {
+      const row=rows[i];
+      if (!row||!row[2]) continue;
+      plants.push({rowIndex:i+1,id:row[0]||String(i),massif:row[1]||'',nom:row[2]||'',latin:row[3]||'',date:row[4]||'',expo:row[5]||'',floraison:row[6]||'',couleur:row[7]||'',sol:row[8]||'',arrosage:row[9]||'',taille:row[10]||'',notes:row[11]||''});
+    }
+    setSS('ok',`Synchronisé · ${plants.length} plante${plants.length!==1?'s':''}`);
+  } catch(e) { setSS('err','Erreur : '+e.message); }
+}
+
+// ── Sheets write ──────────────────────────────────────────────────────────────
+async function scriptCall(payload) {
+  const r = await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
+  try { return await r.json(); } catch(e) { return {ok:true}; }
+}
+
+async function ensureHeaders() {
+  try {
+    const r = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}!A1?key=${API_KEY}`);
+    const d = await r.json();
+    if (!d.values) await scriptCall({action:'append',row:['ID','Massif','Nom commun','Nom latin','Date plantation','Exposition','Floraison','Couleur','Sol','Arrosage','Taille adulte','Notes','Image URL']});
+  } catch(e){}
+}
+
+// ── Render tabs ───────────────────────────────────────────────────────────────
+function renderTabs() {
+  document.getElementById('tabs').innerHTML = MASSIFS.map(m => {
+    const c = plants.filter(p=>p.massif===m).length;
+    return `<button class="tab ${m===currentMassif?'active':''}" data-massif="${m}">${m} <span style="opacity:.45;font-size:11px">${c}</span></button>`;
+  }).join('');
+}
+
+// ── Render grid (async for images) ───────────────────────────────────────────
+async function renderGrid() {
+  document.getElementById('massifTitle').textContent = currentMassif;
+  const filtered = plants.filter(p=>p.massif===currentMassif);
+  document.getElementById('massifCount').textContent = filtered.length ? `· ${filtered.length} plante${filtered.length>1?'s':''}` : '';
+  const grid = document.getElementById('grid');
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="empty"><div class="empty-icon">🌱</div><div>Aucune plante dans ce massif</div></div>`;
+    return;
+  }
+  // Render cards with placeholder first, then load images
+  grid.innerHTML = filtered.map(p => `
+    <div class="card" data-id="${p.id}">
+      <div class="card-ph" id="ph_${p.id}">${getIcon(p.nom)}</div>
+      <div class="card-ov"></div>
+      <div class="card-body">
+        <div class="card-name">${p.nom}</div>
+        <div class="card-latin">${p.latin||''}</div>
+        <div class="card-tags">
+          ${p.floraison?`<span class="tag tflor">${p.floraison}</span>`:''}
+          ${p.expo?`<span class="tag texpo">${p.expo}</span>`:''}
+        </div>
+      </div>
+    </div>`).join('');
+
+  // Load images async per card
+  filtered.forEach(async p => {
+    const imgSrc = await fetchImg(p.nom, p.latin);
+    if (!imgSrc) return;
+    const ph = document.getElementById('ph_'+p.id);
+    if (!ph) return;
+    const img = document.createElement('img');
+    img.className = 'card-img';
+    img.src = imgSrc;
+    img.alt = p.nom;
+    img.loading = 'lazy';
+    img.onerror = () => img.remove();
+    ph.parentNode.insertBefore(img, ph);
+    ph.style.display = 'none';
+  });
+}
+
+function selectMassif(m) { currentMassif=m; renderTabs(); renderGrid(); }
+
+// ── Form helpers ──────────────────────────────────────────────────────────────
+function populateMassifSelect() {
+  document.getElementById('fMassif').innerHTML = MASSIFS.map(m=>`<option value="${m}">${m}</option>`).join('');
+}
+
+function clearForm() {
+  ['fNom','fLatin','fFlor','fCoul','fSol','fTaille','fNotes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fDate').value='';
+  document.getElementById('fExpo').value='';
+  document.getElementById('fArro').value='';
+}
+
+function openAdd() {
+  editingId=null;
+  document.getElementById('addTitle').textContent='Ajouter une plante';
+  document.getElementById('btnDel').style.display='none';
+  clearForm();
+  document.getElementById('fMassif').value=currentMassif;
+  document.getElementById('addOverlay').classList.add('open');
+}
+
+// ── AI generation ─────────────────────────────────────────────────────────────
+const PLANT_DB = {
+  'dahlia':{latin:'Dahlia pinnata',expo:'Plein soleil',floraison:'Juillet – Octobre',couleur:'Rouge, rose, jaune, blanc',sol:'Riche, humifère et drainant',arrosage:'Régulier',taille:'40 cm – 1,5 m',notes:'Arracher les tubercules avant l\'hiver sous -5°C. Tuteurer les grandes variétés. Pincer le bourgeon central pour multiplier les fleurs.'},
+  'surfinia':{latin:'Petunia ×hybrida',expo:'Plein soleil',floraison:'Mai – Octobre',couleur:'Mauve, rose, blanc, rouge',sol:'Léger et drainant',arrosage:'Abondant',taille:'30–60 cm',notes:'Arroser sans mouiller le feuillage. Supprimer les fleurs fanées. Fertiliser toutes les 2 semaines avec engrais pour géraniums.'},
+  'oeillet de poète':{latin:'Dianthus barbatus',expo:'Plein soleil',floraison:'Mai – Juillet',couleur:'Rouge, rose, blanc, bicolore',sol:'Bien drainé, légèrement calcaire',arrosage:'Modéré',taille:'30–60 cm',notes:'Bisannuelle : semer en juin pour fleurir l\'année suivante. Se ressème spontanément. Couper les tiges fanées pour prolonger la floraison.'},
+  'oeillet':{latin:'Dianthus caryophyllus',expo:'Plein soleil',floraison:'Mai – Août',couleur:'Rose, rouge, blanc, jaune',sol:'Drainant, calcaire',arrosage:'Modéré',taille:'30–80 cm',notes:'Pincer les jeunes pousses pour favoriser la ramification. Éviter les arrosages sur le feuillage. Supprimer les fleurs fanées régulièrement.'},
+  'saule crevette':{latin:'Salix integra \'Hakuro-nishiki\'',expo:'Plein soleil',floraison:'Avril (chatons)',couleur:'Feuillage panaché rose, blanc et vert',sol:'Frais à humide, s\'adapte à tous sols',arrosage:'Régulier',taille:'1,5–2 m taillé en boule',notes:'Tailler chaque année après la feuillaison pour conserver la forme en boule et la couleur du feuillage panaché. Magnifique en bac. Redémarre bien même après une taille sévère.'},
+  'olivier':{latin:'Olea europaea',expo:'Plein soleil',floraison:'Mai – Juin',couleur:'Blanc crème, très discret',sol:'Drainant, pauvre, calcaire',arrosage:'Faible',taille:'3–5 m (taillé à volonté)',notes:'Rustique jusqu\'à -10°C. Tailler légèrement après la récolte pour aérer la silhouette. En pot, arroser modérément en été, très peu en hiver. Craindre surtout l\'excès d\'eau.'},
+  'citron 4 saison':{latin:'Citrus limon',expo:'Plein soleil',floraison:'Toute l\'année par vagues',couleur:'Blanc très parfumé',sol:'Bien drainé, légèrement acide (pH 6–6,5)',arrosage:'Régulier',taille:'2–3 m',notes:'Protéger dès -3°C. Fertiliser avec engrais agrumes de mars à octobre. En pot, rempoter tous les 2–3 ans. Vaporiser le feuillage par temps chaud et sec pour éviter l\'araignée rouge.'},
+  'pamplemousse':{latin:'Citrus maxima',expo:'Plein soleil',floraison:'Printemps',couleur:'Blanc',sol:'Riche et drainant',arrosage:'Régulier',taille:'3–5 m',notes:'Le plus grand des agrumes. Abriter l\'hiver sous -3°C. Fruits mûrs en automne-hiver, très productif. Tailler légèrement pour maintenir la forme.'},
+  'citron caviar':{latin:'Microcitrus australasica',expo:'Plein soleil',floraison:'Printemps',couleur:'Blanc rosé',sol:'Drainant, légèrement acide',arrosage:'Modéré',taille:'2–4 m',notes:'Fruits récoltés juillet–août : petites billes juteuses saveur citron-citron vert. Très épineux, manipuler avec précaution. Sensible au gel sous -2°C. Originalité culinaire remarquable.'},
+  'citron vert':{latin:'Citrus aurantiifolia',expo:'Plein soleil',floraison:'Printemps',couleur:'Blanc',sol:'Drainant',arrosage:'Régulier',taille:'2–4 m',notes:'Le plus sensible au gel des agrumes : rentrer impérativement en hiver. Fruits toute l\'année. Arroser régulièrement en été, réduire en hiver. Engrais agrumes mars–octobre.'},
+  'oranger':{latin:'Citrus sinensis',expo:'Plein soleil',floraison:'Printemps',couleur:'Blanc, fleur d\'oranger très parfumée',sol:'Riche et drainant',arrosage:'Régulier',taille:'3–5 m',notes:'La fleur d\'oranger (eau de fleur) se récolte en avril–mai. Engrais agrumes avril–septembre. Protéger dès -3°C. En pot : arrosage régulier en été, minimal en hiver.'},
+  'rosier':{latin:'Rosa sp.',expo:'Plein soleil',floraison:'Mai – Octobre (remontant)',couleur:'Variable selon variété',sol:'Riche, argileux, bien drainé',arrosage:'Régulier',taille:'60 cm – 2 m',notes:'Tailler en février : couper les bois morts, éclaircir le centre. Traiter préventivement contre l\'oïdium et les pucerons dès le débourrement. Pailler le pied pour conserver l\'humidité et éviter les maladies.'},
+  'sauge perroquet':{latin:'Salvia elegans',expo:'Plein soleil à mi-ombre',floraison:'Été – Automne',couleur:'Rouge vif, très lumineux',sol:'Bien drainé, léger',arrosage:'Modéré',taille:'60–90 cm',notes:'Feuilles à odeur d\'ananas au froissement. Gélive : rentrer en pot dès -2°C ou protéger le pied. Bouturer en automne pour multiplier. Attire les colibris et les butineurs.'},
+  'pivoine':{latin:'Paeonia lactiflora',expo:'Plein soleil à mi-ombre',floraison:'Mai – Juin',couleur:'Rose, rouge, blanc, parfois bicolore',sol:'Profond, riche, bien drainé',arrosage:'Modéré',taille:'60–90 cm',notes:'Ne jamais enterrer le collet à plus de 3 cm : c\'est la cause principale de non-floraison. Vivace très longévive (50 ans et plus), ne pas déplacer. Soutenir les tiges florales.'},
+  'rose trémière':{latin:'Alcea rosea',expo:'Plein soleil',floraison:'Juillet – Août',couleur:'Rose, rouge, blanc, jaune, noir-violet',sol:'Drainant, ordinaire',arrosage:'Modéré',taille:'1,5–2,5 m',notes:'Bisannuelle ou vivace de courte durée : se ressème spontanément chaque année. Semer en juin-juillet à la place voulue. Sensible à la rouille : éviter d\'arroser le feuillage.'},
+  'bégonia nain':{latin:'Begonia semperflorens',expo:'Mi-ombre (tolère le plein soleil si arrosé)',floraison:'Juin – Octobre',couleur:'Rose, rouge, blanc',sol:'Riche, humifère, frais',arrosage:'Régulier',taille:'20–30 cm',notes:'Plante annuelle : repiquer en mai après les gelées. Arroser sans excès pour éviter la pourriture du collet. Pas besoin de supprimer les fleurs fanées. Idéal en bordure ou massif.'}
+};
+
+async function generateFiche() {
+  const nom = document.getElementById('fNom').value.trim();
+  if (!nom) { showToast('Entre le nom de la plante d\'abord'); return; }
+  const btn = document.getElementById('btnGen');
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span> Génération…';
+  const n = nom.toLowerCase();
+  let info = null;
+  for (const [k,v] of Object.entries(PLANT_DB)) { if (n.includes(k)||k.includes(n)) { info=v; break; } }
+  if (info) {
+    if (info.latin    && !document.getElementById('fLatin').value) document.getElementById('fLatin').value=info.latin;
+    if (info.expo     && !document.getElementById('fExpo').value)  document.getElementById('fExpo').value=info.expo;
+    if (info.floraison&& !document.getElementById('fFlor').value)  document.getElementById('fFlor').value=info.floraison;
+    if (info.couleur  && !document.getElementById('fCoul').value)  document.getElementById('fCoul').value=info.couleur;
+    if (info.sol      && !document.getElementById('fSol').value)   document.getElementById('fSol').value=info.sol;
+    if (info.arrosage && !document.getElementById('fArro').value)  document.getElementById('fArro').value=info.arrosage;
+    if (info.taille   && !document.getElementById('fTaille').value)document.getElementById('fTaille').value=info.taille;
+    if (info.notes    && !document.getElementById('fNotes').value) document.getElementById('fNotes').value=info.notes;
+    showToast('✦ Fiche générée !');
+  } else {
+    showToast('Plante non reconnue · remplis manuellement');
+  }
+  btn.disabled=false; btn.innerHTML='✦ Générer la fiche automatiquement';
+}
+
+// ── Save ──────────────────────────────────────────────────────────────────────
+async function savePlant() {
+  const nom = document.getElementById('fNom').value.trim();
+  if (!nom) { showToast('Le nom est obligatoire'); return; }
+  const btn = document.getElementById('btnSave');
+  btn.innerHTML='<span class="spin"></span>'; btn.disabled=true;
+  const row = [
+    editingId||Date.now().toString(36),
+    document.getElementById('fMassif').value, nom,
+    document.getElementById('fLatin').value, document.getElementById('fDate').value,
+    document.getElementById('fExpo').value, document.getElementById('fFlor').value,
+    document.getElementById('fCoul').value, document.getElementById('fSol').value,
+    document.getElementById('fArro').value, document.getElementById('fTaille').value,
+    document.getElementById('fNotes').value, ''
+  ];
+  try {
+    if (editingId) {
+      const p=plants.find(x=>x.id===editingId);
+      if (p) await scriptCall({action:'update',rowIndex:p.rowIndex,row});
+    } else {
+      await scriptCall({action:'append',row});
+    }
+    currentMassif=row[1];
+    closeOverlay('addOverlay');
+    showToast(editingId?'Plante modifiée ✓':'Plante ajoutée ✓');
+    await syncNow();
+  } catch(e) { showToast('Erreur : '+e.message); }
+  btn.innerHTML='Enregistrer'; btn.disabled=false;
+}
+
+async function deletePlant() {
+  if (!editingId||!confirm('Supprimer cette plante définitivement ?')) return;
+  const p=plants.find(x=>x.id===editingId);
+  if (p) { await scriptCall({action:'clear',rowIndex:p.rowIndex}); closeOverlay('addOverlay'); showToast('Plante supprimée'); await syncNow(); }
+}
+
+// ── Detail ────────────────────────────────────────────────────────────────────
+async function openDetail(id) {
+  const p=plants.find(x=>x.id===id);
+  if (!p) return;
+  viewingId=id;
+  document.getElementById('detTitle').textContent=p.nom;
+
+  // Hero image
+  const img = await fetchImg(p.nom, p.latin);
+  const hero = img
+    ? `<img class="det-hero" src="${img}" alt="${p.nom}" onerror="this.outerHTML='<div class=det-ph>${getIcon(p.nom)}</div>'">`
+    : `<div class="det-ph">${getIcon(p.nom)}</div>`;
+
+  // Conseils pratiques (depuis PLANT_DB)
+  const n = p.nom.toLowerCase();
+  let dbInfo = null;
+  for (const [k,v] of Object.entries(PLANT_DB)) { if (n.includes(k)||k.includes(n)) { dbInfo=v; break; } }
+
+  const identFields = [
+    ['Nom latin', p.latin], ['Massif', p.massif], ['Date de plantation', p.date]
+  ].filter(f=>f[1]);
+
+  const cultureFields = [
+    ['Exposition', p.expo], ['Type de sol', p.sol], ['Arrosage', p.arrosage], ['Taille adulte', p.taille]
+  ].filter(f=>f[1]);
+
+  const floFields = [
+    ['Période de floraison', p.floraison], ['Couleur', p.couleur]
+  ].filter(f=>f[1]);
+
+  document.getElementById('detBody').innerHTML = `
+    ${hero}
+    ${identFields.length ? `
+    <div class="det-section">
+      <div class="det-section-title">Identification</div>
+      <div class="det-grid">${identFields.map(([l,v])=>`<div class="df"><div class="dl">${l}</div><div class="dv">${v}</div></div>`).join('')}</div>
+    </div>` : ''}
+    ${floFields.length ? `
+    <div class="det-section">
+      <div class="det-section-title">Floraison</div>
+      <div class="det-grid">${floFields.map(([l,v])=>`<div class="df"><div class="dl">${l}</div><div class="dv">${v}</div></div>`).join('')}</div>
+    </div>` : ''}
+    ${cultureFields.length ? `
+    <div class="det-section">
+      <div class="det-section-title">Culture</div>
+      <div class="det-grid">${cultureFields.map(([l,v])=>`<div class="df"><div class="dl">${l}</div><div class="dv">${v}</div></div>`).join('')}</div>
+    </div>` : ''}
+    ${p.notes ? `
+    <div class="det-section">
+      <div class="det-section-title">Notes personnelles</div>
+      <div class="det-notes">📝 ${p.notes}</div>
+    </div>` : ''}
+    ${dbInfo && dbInfo.notes && dbInfo.notes !== p.notes ? `
+    <div class="det-section">
+      <div class="det-section-title">Conseils pratiques</div>
+      <div class="det-conseils">🌿 ${dbInfo.notes}</div>
+    </div>` : ''}
+  `;
+  document.getElementById('detOverlay').classList.add('open');
+}
+
+function editFromDetail() {
+  closeOverlay('detOverlay');
+  const p=plants.find(x=>x.id===viewingId);
+  if (!p) return;
+  editingId=p.id;
+  document.getElementById('addTitle').textContent='Modifier la plante';
+  document.getElementById('btnDel').style.display='inline-flex';
+  document.getElementById('fNom').value=p.nom||'';
+  document.getElementById('fLatin').value=p.latin||'';
+  document.getElementById('fMassif').value=p.massif||currentMassif;
+  document.getElementById('fDate').value=p.date||'';
+  document.getElementById('fExpo').value=p.expo||'';
+  document.getElementById('fFlor').value=p.floraison||'';
+  document.getElementById('fCoul').value=p.couleur||'';
+  document.getElementById('fSol').value=p.sol||'';
+  document.getElementById('fArro').value=p.arrosage||'';
+  document.getElementById('fTaille').value=p.taille||'';
+  document.getElementById('fNotes').value=p.notes||'';
+  document.getElementById('addOverlay').classList.add('open');
+}
+
+function closeOverlay(id) { document.getElementById(id).classList.remove('open'); }
+
+// ── Event listeners (delegation) ──────────────────────────────────────────────
+document.getElementById('tabs').addEventListener('click', e => {
+  const t=e.target.closest('[data-massif]'); if(t) selectMassif(t.dataset.massif);
+});
+document.getElementById('grid').addEventListener('click', e => {
+  const c=e.target.closest('[data-id]'); if(c) openDetail(c.dataset.id);
+});
+document.getElementById('btnSync').addEventListener('click', syncNow);
+document.getElementById('btnAdd').addEventListener('click', openAdd);
+document.getElementById('btnGen').addEventListener('click', generateFiche);
+document.getElementById('btnSave').addEventListener('click', savePlant);
+document.getElementById('btnDel').addEventListener('click', deletePlant);
+document.getElementById('btnCloseAdd').addEventListener('click', ()=>closeOverlay('addOverlay'));
+document.getElementById('btnCancelAdd').addEventListener('click', ()=>closeOverlay('addOverlay'));
+document.getElementById('btnCloseDet').addEventListener('click', ()=>closeOverlay('detOverlay'));
+document.getElementById('btnCloseDet2').addEventListener('click', ()=>closeOverlay('detOverlay'));
+document.getElementById('btnEdit').addEventListener('click', editFromDetail);
+
+// ── Utils ─────────────────────────────────────────────────────────────────────
+async function syncNow() { await fetchPlants(); renderTabs(); await renderGrid(); }
+function showToast(msg) {
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+async function init() { populateMassifSelect(); await ensureHeaders(); await syncNow(); }
+init();
+</script>
+</body>
+</html>
