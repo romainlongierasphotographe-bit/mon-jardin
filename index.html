@@ -200,17 +200,62 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 1.2
 .clentry-badge{font-size:11px;padding:3px 9px;border-radius:99px;font-weight:600;flex-shrink:0}
 
 /* GALERIE PHOTOS */
-.gallery-wrap{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;margin-bottom:0}
+.gallery-wrap{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;margin-bottom:0}
 .gallery-wrap::-webkit-scrollbar{display:none}
-.gallery-thumb{width:90px;height:90px;object-fit:cover;border-radius:var(--rs);flex-shrink:0;cursor:pointer;border:2px solid transparent;transition:border-color .15s}
-.gallery-thumb:hover{border-color:var(--greenl)}
-.gallery-thumb.main{border-color:var(--green)}
-.gallery-add{width:90px;height:90px;border-radius:var(--rs);flex-shrink:0;border:2px dashed var(--border2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--cream3);font-size:22px;transition:border-color .15s}
+.gitem{flex-shrink:0;width:96px;cursor:pointer;position:relative}
+.gallery-thumb{width:96px;height:96px;object-fit:cover;border-radius:var(--rs);display:block;border:2px solid transparent;transition:border-color .15s;background:var(--bg3)}
+.gitem:hover .gallery-thumb{border-color:var(--greenl)}
+.gitem.main .gallery-thumb{border-color:var(--green)}
+.gitem-date{font-size:11px;color:var(--cream3);text-align:center;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gitem-star{position:absolute;top:5px;left:5px;background:rgba(0,0,0,.6);color:#fcd87a;font-size:10px;font-weight:600;padding:2px 6px;border-radius:99px}
+.gallery-add{width:96px;height:96px;border-radius:var(--rs);flex-shrink:0;border:2px dashed var(--border2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;color:var(--cream3);font-size:22px;transition:border-color .15s;background:none;font-family:'DM Sans',sans-serif}
+.gallery-add small{font-size:11px}
 .gallery-add:hover{border-color:var(--green);color:var(--greenl)}
-.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:200;align-items:center;justify-content:center}
+.gallery-empty{font-size:13px;color:var(--cream3);margin-top:8px}
+.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px}
 .lightbox.open{display:flex}
-.lightbox img{max-width:95vw;max-height:90vh;border-radius:var(--rs);object-fit:contain}
+.lightbox img{max-width:95vw;max-height:78vh;border-radius:var(--rs);object-fit:contain}
 .lightbox-close{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:24px;width:40px;height:40px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.lb-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;max-width:95vw}
+.lb-cap{font-size:14px;color:var(--cream2);text-align:center;width:100%}
+.lb-cap b{color:var(--cream);font-weight:600}
+.dhero-cam{position:absolute;top:12px;right:52px;height:32px;padding:0 12px;border-radius:99px;background:rgba(0,0,0,.5);border:none;color:#fff;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;z-index:2}
+.dhero-cam:hover{background:rgba(0,0,0,.7)}
+/* AJOUT PHOTO */
+.ph-prev{width:100%;max-height:280px;object-fit:contain;border-radius:var(--rs);background:var(--bg3);margin-bottom:1rem;display:block}
+.ph-check{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--cream2);margin-bottom:1rem;cursor:pointer}
+.ph-check input{width:18px;height:18px;accent-color:var(--green)}
+.ph-hint{font-size:12px;color:var(--cream3);margin-top:-.5rem;margin-bottom:1rem}
+/* ACCUEIL */
+.home-head{margin-bottom:1.5rem}
+.home-title{font-family:'Playfair Display',serif;font-size:26px;color:var(--cream)}
+.home-stats{font-size:13px;color:var(--cream3);margin-top:4px}
+.home-bloom{margin-bottom:2rem}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:13px;padding:5px 12px;border-radius:99px;background:var(--bg3);border:1px solid var(--border2);color:var(--cream2);cursor:pointer;font-family:'DM Sans',sans-serif}
+.chip:hover{border-color:var(--green);color:var(--greenl)}
+.msec{margin-bottom:2.25rem}
+.msec-cover{position:relative;height:190px;border-radius:var(--r);overflow:hidden;cursor:pointer;background:linear-gradient(135deg,var(--greend),var(--bg4));margin-bottom:12px;box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.msec-cover>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.msec-mosaic{position:absolute;inset:0;display:grid;grid-template-columns:repeat(2,1fr);grid-auto-rows:1fr;gap:2px}
+.msec-mosaic img{width:100%;height:100%;object-fit:cover;display:block}
+.msec-mosaic.n1{grid-template-columns:1fr}
+.msec-mosaic.n3 img:first-child{grid-row:span 2}
+.msec-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:60px;opacity:.5}
+.msec-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(5,10,5,.9) 0%,rgba(5,10,5,.1) 60%,transparent 100%)}
+.msec-info{position:absolute;left:0;right:0;bottom:0;padding:1rem 1.125rem}
+.msec-name{font-family:'Playfair Display',serif;font-size:22px;color:#fff;line-height:1.2}
+.msec-meta{font-size:12px;color:rgba(255,255,255,.65);margin-top:3px}
+.msec-cam{position:absolute;top:10px;right:10px;height:32px;padding:0 12px;border-radius:99px;background:rgba(0,0,0,.5);border:none;color:#fff;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer}
+.msec-cam:hover{background:rgba(0,0,0,.7)}
+.msec-sub{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--cream3);font-weight:600;margin:4px 0 8px}
+.msec-photos{margin-bottom:14px}
+.hscroll{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding:2px 2px 8px;scroll-snap-type:x proximity}
+.hscroll::-webkit-scrollbar{display:none}
+.hscroll .card{width:132px;flex-shrink:0;scroll-snap-align:start}
+.hscroll .card-name{font-size:14px}
+@media(min-width:900px){.hscroll.wrap{flex-wrap:wrap;overflow:visible}}
+.massif-photos{margin-bottom:1.25rem}
 /* HISTORIQUE */
 .histo-entry{display:flex;align-items:flex-start;gap:12px;padding:10px 12px;border-radius:var(--rs);margin-bottom:6px;background:var(--bg3);cursor:pointer;transition:background .12s}
 .histo-entry:hover{background:var(--bg4)}
@@ -255,6 +300,7 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 1.2
 <div class="mov" id="mov"></div>
 <div class="smenu" id="smenu">
   <div class="smhdr"><span class="smhdr-title">Menu</span><button class="bx" id="btnCloseMenu">✕</button></div>
+  <button class="mitem" data-goto="accueil"><div class="mitem-icon" style="background:rgba(74,140,74,.2)">🏡</div><div><span class="mitem-label">Accueil</span><span class="mitem-sub">Tout le jardin</span></div></button>
   <button class="mitem" data-goto="massifs"><div class="mitem-icon" style="background:rgba(74,140,74,.2)">🌿</div><div><span class="mitem-label">Mes massifs</span><span class="mitem-sub">Vue par massif</span></div></button>
   <button class="mitem" data-goto="calendrier"><div class="mitem-icon" style="background:rgba(59,130,246,.2)">📅</div><div><span class="mitem-label">Multiplication</span><span class="mitem-sub">Semis, bouturage…</span></div></button>
   <button class="mitem" data-goto="mois"><div class="mitem-icon" style="background:rgba(245,158,11,.2)">🗓</div><div><span class="mitem-label">Ce mois-ci</span><span class="mitem-sub">Que faire au jardin</span></div></button>
@@ -264,11 +310,17 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 1.2
   <button class="mitem" id="mSync"><div class="mitem-icon" style="background:rgba(255,255,255,.05)">↻</div><div><span class="mitem-label">Synchroniser</span><span class="mitem-sub">Recharger les données</span></div></button>
 </div>
 
+<!-- Page Accueil -->
+<div class="page active" id="page-accueil">
+  <div class="pi" id="accueilView"></div>
+</div>
+
 <!-- Page Massifs -->
-<div class="page active" id="page-massifs">
+<div class="page" id="page-massifs">
   <div class="mbar" id="mbar"></div>
   <div class="pi">
     <div class="ptitle"><span id="massifTitle"></span><span class="psub" id="massifCount"></span></div>
+    <div class="massif-photos" id="massifPhotos"></div>
     <div class="grid" id="grid"></div>
     <!-- Vue floraison annuelle -->
     <div class="floraison-section" id="floraisonSection"></div>
@@ -337,6 +389,7 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 1.2
     <div class="dhero" id="dhero">
       <div class="dhero-ph" id="dheroPh">🌱</div>
       <div class="dhero-ov"></div>
+      <button class="dhero-cam" id="btnHeroCam" title="Changer la photo de profil">📷 Photo de profil</button>
       <button class="dhero-close" id="btnDetClose">✕</button>
       <div class="dhero-body">
         <div class="dname" id="dname"></div>
@@ -403,6 +456,24 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 1.2
 <div class="lightbox" id="lightbox">
   <button class="lightbox-close" id="lightboxClose">✕</button>
   <img id="lightboxImg" src="" alt="">
+  <div class="lb-bar" id="lbBar"></div>
+</div>
+
+<!-- Ajout de photo -->
+<input type="file" id="photoFileInput" accept="image/*" style="display:none">
+<div class="overlay" id="photoOverlay">
+  <div class="fmodal">
+    <div class="fhdr"><span class="ftitle" id="photoTitle">Ajouter une photo</span><button class="bx" id="btnClosePhoto">✕</button></div>
+    <img class="ph-prev" id="photoPrev" alt="">
+    <div class="field"><label>Date de la photo</label><input type="date" id="photoDate"></div>
+    <p class="ph-hint" id="photoDateHint"></p>
+    <div class="field"><label>Légende (facultatif)</label><input id="photoNote" placeholder="Première floraison, après la taille…"></div>
+    <label class="ph-check" id="photoProfileRow"><input type="checkbox" id="photoProfile"> Utiliser comme photo de profil</label>
+    <div class="factions">
+      <button class="btn btn-o" id="btnCancelPhoto">Annuler</button>
+      <button class="btn btn-g" id="btnSavePhoto">Enregistrer</button>
+    </div>
+  </div>
 </div>
 
 <!-- Add intervention overlay -->
@@ -440,6 +511,9 @@ const SHEET_ID   = '1Hp0J2iwvFoSwqwd2nrlR0ILUfDx57y27-mMLxOeG2-U';
 const API_KEY    = 'AIzaSyCsMZVzrkRchl6Yqrz8X8d9bM07yycom54';
 const SCRIPT_URL      = 'https://script.google.com/macros/s/AKfycbwKVTE1Fk4voP3OEZgRvpcUyzOP2YwuTXoT9us3OIiMmvjIIDpTdW8IVEFau5Z9nApXvg/exec';
 const HISTO_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxkjkuOUxi5u7Jqrgoa0ecXoBFJmQ_a13iabxN1bDZOhEjUxIUFnw2AAXK70LK82Vcp/exec';
+// Script des photos (Google Drive + onglet « Photos ») — voir apps-script/LISEZMOI.md
+const PHOTO_SCRIPT_URL = '';
+const PHOTOS_SHEET = 'Photos';
 const SHEET_NAME = 'Plantes';
 let MASSIFS      = []; // rempli dynamiquement depuis les données du Sheet
 const MOIS       = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
@@ -472,7 +546,7 @@ async function fetchImg(nom,latin){
 
 // ── STATE ────────────────────────────────────────────────────────
 let plants=[],currentMassif='',editingId=null,viewingId=null;
-let currentNav='massifs',calMode='grid',multEntries=[],currentPhoto='';
+let currentNav='accueil',calMode='grid',multEntries=[],currentPhoto='';
 
 // ── SHEETS ───────────────────────────────────────────────────────
 function setSS(s,t){const d=document.getElementById('sdot');d.className='sdot '+s;d.title=t||s;}
@@ -530,7 +604,8 @@ async function loadAll(){
         engrais:p['Engrais']||'',bonsavoir:p['Bonsavoir']||'',toxique:p['Toxique']||'',
         tags,mult,actions,
         datesPlantation:p['Dates plantation']||'',datesSemis:p['Dates semis']||'',
-        datesTaille:p['Dates taille']||'',notes:p['Notes']||'',photo:p['Photo']||''
+        datesTaille:p['Dates taille']||'',notes:p['Notes']||'',photo:p['Photo']||'',
+        photosExtra:p['Photos extra']||''
       };
     });
     // Recalculer les massifs depuis les données
@@ -541,6 +616,88 @@ async function loadAll(){
     setSS('ok',`Synchronisé · ${plants.length} plante${plants.length!==1?'s':''}`);
   }catch(e){setSS('err','Erreur : '+e.message);console.error(e);}
 }
+
+// ── PHOTOS (onglet « Photos » + Google Drive) ────────────────────
+let photos=[]; // {id,type:'plante'|'massif',plantId,massif,date:'AAAA-MM-JJ',fileId,url,note}
+
+async function loadPhotos(){
+  try{
+    const rows=await fetchSheet(PHOTOS_SHEET);
+    photos=rows.map(r=>({
+      id:r['ID'],type:(r['Type']||'plante').trim().toLowerCase()==='massif'?'massif':'plante',
+      plantId:(r['PlantID']||'').trim(),massif:(r['Massif']||'').trim(),
+      date:normDate(r['Date']),fileId:(r['FileID']||'').trim(),url:(r['URL']||'').trim(),note:r['Note']||''
+    })).filter(p=>p.fileId||p.url);
+  }catch(e){photos=[];} // onglet pas encore créé
+}
+
+async function photoScriptCall(payload){
+  if(!PHOTO_SCRIPT_URL)throw new Error('le script des photos n\'est pas encore installé');
+  const r=await fetch(PHOTO_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
+  let d;
+  try{d=await r.json();}catch(e){throw new Error('réponse invalide du script des photos');}
+  if(!d.ok)throw new Error(d.error||'échec');
+  return d;
+}
+
+function photoSrc(ph,size=800){
+  if(ph.fileId)return`https://drive.google.com/thumbnail?id=${encodeURIComponent(ph.fileId)}&sz=w${size}`;
+  return ph.url;
+}
+function byDateDesc(a,b){return(b.date||'').localeCompare(a.date||'')||String(b.id||'').localeCompare(String(a.id||''));}
+
+// Toutes les photos d'une plante, les plus récentes d'abord (+ anciennes photos stockées dans le Sheet)
+function plantPhotos(p){
+  const list=photos.filter(ph=>ph.type==='plante'&&ph.plantId===p.id).sort(byDateDesc);
+  const legacy=[];
+  if(p.photo&&!list.some(ph=>ph.url===p.photo))legacy.push({legacy:true,url:p.photo,date:'',note:''});
+  (p.photosExtra||'').split('|').map(s=>s.trim()).filter(Boolean).forEach(u=>{if(!list.some(ph=>ph.url===u))legacy.push({legacy:true,url:u,date:'',note:''});});
+  return list.concat(legacy);
+}
+function massifPhotos(m){return photos.filter(ph=>ph.type==='massif'&&ph.massif===m).sort(byDateDesc);}
+
+// ── DATES ──
+function pad2(n){return String(n).padStart(2,'0');}
+function isoDate(d){return`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;}
+function normDate(s){
+  s=String(s||'').trim();
+  let m=/^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(s);if(m)return`${m[1]}-${pad2(m[2])}-${pad2(m[3])}`;
+  m=/^(\d{1,2})\/(\d{1,2})\/(\d{4})/.exec(s);if(m)return`${m[3]}-${pad2(m[2])}-${pad2(m[1])}`;
+  return'';
+}
+function fmtDate(s){
+  const n=normDate(s);if(!n)return'';
+  const[y,m,d]=n.split('-').map(Number);
+  return new Date(y,m-1,d).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'});
+}
+// Date de prise de vue lue dans les données EXIF d'une photo JPEG
+function exifDate(v){
+  if(v.byteLength<4||v.getUint16(0)!==0xFFD8)return null;
+  let off=2;
+  while(off+10<v.byteLength){
+    const marker=v.getUint16(off);
+    if((marker&0xFF00)!==0xFF00)return null;
+    const len=v.getUint16(off+2);
+    if(marker===0xFFE1&&v.getUint32(off+4)===0x45786966){
+      const t=off+10,le=v.getUint16(t)===0x4949;
+      const g16=o=>v.getUint16(o,le),g32=o=>v.getUint32(o,le);
+      const str=(o,n)=>{let s='';for(let i=0;i<n&&o+i<v.byteLength;i++){const c=v.getUint8(o+i);if(!c)break;s+=String.fromCharCode(c);}return s;};
+      const scan=ifd=>{const res={};const n=g16(t+ifd);for(let i=0;i<n;i++){const e=t+ifd+2+i*12;const tag=g16(e);if(tag===0x9003||tag===0x0132)res[tag]=str(t+g32(e+8),19);if(tag===0x8769)res.exif=g32(e+8);}return res;};
+      const ifd0=scan(g32(t+4));
+      const s=(ifd0.exif?scan(ifd0.exif)[0x9003]:'')||ifd0[0x0132];
+      const m=s&&/^(\d{4}):(\d{2}):(\d{2})/.exec(s);
+      return m&&m[1]!=='0000'?`${m[1]}-${m[2]}-${m[3]}`:null;
+    }
+    off+=2+len;
+  }
+  return null;
+}
+async function readPhotoDate(file){
+  try{const d=exifDate(new DataView(await file.slice(0,262144).arrayBuffer()));if(d)return{date:d,src:'exif'};}catch(e){}
+  if(file.lastModified)return{date:isoDate(new Date(file.lastModified)),src:'file'};
+  return{date:isoDate(new Date()),src:'today'};
+}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
 async function scriptCall(payload){
   const r=await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
@@ -573,6 +730,9 @@ function showNav(nav){
   currentNav=nav;
   document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+nav));
   closeMenu();
+  window.scrollTo(0,0);
+  if(nav==='accueil')renderAccueil();
+  if(nav==='massifs'){renderTabs();renderGrid();}
   if(nav==='calendrier')renderCal();
   if(nav==='mois')renderMois();
   if(nav==='historique'){populateHistoPlantFilter();renderHistorique();}
@@ -589,39 +749,126 @@ function renderTabs(){
   }).join('');
 }
 
+// Carte d'une plante (page massif et accueil)
+function plantCard(p,compact){
+  const hasMult=p.mult&&p.mult.length;
+  return `<div class="card" data-id="${esc(p.id)}">
+    ${p.photo?`<img class="card-img" src="${esc(p.photo)}" alt="${esc(p.nom)}" loading="lazy">`:`<div class="card-ph" data-wiki="${esc(p.id)}">${getIcon(p.nom)}</div>`}
+    <div class="card-ov"></div>
+    <div class="card-body">
+      <div class="card-name">${esc(p.nom)}</div>
+      <div class="card-latin">${esc(p.latin)}</div>
+      ${compact?'':`<div class="card-tags">
+        ${p.floraison?`<span class="ptag ptag-g">${esc(p.floraison)}</span>`:''}
+        ${p.expo?`<span class="ptag ptag-y">${esc(p.expo)}</span>`:''}
+        ${hasMult?`<span class="ptag ptag-p">🌱</span>`:''}
+      </div>`}
+    </div>
+  </div>`;
+}
+// Image Wikipédia pour les plantes sans photo
+function hydrateWiki(container){
+  container.querySelectorAll('[data-wiki]').forEach(async ph=>{
+    const p=plants.find(x=>x.id===ph.dataset.wiki);if(!p)return;
+    const src=await fetchImg(p.nom,p.latin);if(!src||!ph.isConnected)return;
+    const img=document.createElement('img');img.className='card-img';img.src=src;img.alt=p.nom;img.loading='lazy';
+    img.onerror=()=>{img.remove();ph.style.display='';};
+    ph.parentNode.insertBefore(img,ph);ph.style.display='none';
+  });
+}
+
 async function renderGrid(){
   document.getElementById('massifTitle').textContent=currentMassif;
   const f=plants.filter(p=>p.massifs.includes(currentMassif));
   document.getElementById('massifCount').textContent=f.length?`· ${f.length} plante${f.length>1?'s':''}`:' ';
+  renderMassifPhotos();
   const grid=document.getElementById('grid');
   if(!f.length){grid.innerHTML=`<div class="empty">🌱<br><br>Aucune plante dans ce massif</div>`;renderFloraison([]);return;}
-  grid.innerHTML=f.map(p=>{
-    const hasMult=p.mult&&p.mult.length;
-    return `<div class="card" data-id="${p.id}">
-      ${p.photo?`<img class="card-img" src="${p.photo}" alt="${p.nom}">`:`<div class="card-ph" id="ph_${p.id}">${getIcon(p.nom)}</div>`}
-      <div class="card-ov"></div>
-      <div class="card-body">
-        <div class="card-name">${p.nom}</div>
-        <div class="card-latin">${p.latin||''}</div>
-        <div class="card-tags">
-          ${p.floraison?`<span class="ptag ptag-g">${p.floraison}</span>`:''}
-          ${p.expo?`<span class="ptag ptag-y">${p.expo}</span>`:''}
-          ${hasMult?`<span class="ptag ptag-p">🌱</span>`:''}
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-  f.filter(p=>!p.photo).forEach(async p=>{
-    const src=await fetchImg(p.nom,p.latin);if(!src)return;
-    const ph=document.getElementById('ph_'+p.id);if(!ph)return;
-    const img=document.createElement('img');img.className='card-img';img.src=src;img.alt=p.nom;
-    img.onerror=()=>img.remove();
-    ph.parentNode.insertBefore(img,ph);ph.style.display='none';
-  });
+  grid.innerHTML=f.map(p=>plantCard(p)).join('');
+  hydrateWiki(grid);
   renderFloraison(f);
 }
 
+// Bandeau des photos du massif (page massif)
+function renderMassifPhotos(){
+  const box=document.getElementById('massifPhotos');
+  if(!currentMassif){box.innerHTML='';return;}
+  box.innerHTML=`<div class="msec-sub">📷 Photos du massif</div>${photoStrip(massifPhotos(currentMassif),{type:'massif',massif:currentMassif})}`;
+}
+
+// Bande de vignettes datées + bouton d'ajout
+function photoStrip(list,target,mainUrl){
+  const enc=encodeURIComponent(JSON.stringify(target));
+  return `<div class="gallery-wrap">
+    <button class="gallery-add" data-add-photo="${enc}" title="Ajouter une photo">＋<small>Photo</small></button>
+    ${list.map((ph,i)=>{
+      const isMain=mainUrl&&ph.url===mainUrl;
+      return `<div class="gitem ${isMain?'main':''}" data-photo-idx="${i}" data-photo-target="${enc}">
+        <img class="gallery-thumb" src="${esc(photoSrc(ph,300))}" alt="" loading="lazy">
+        ${isMain?'<span class="gitem-star">★ Profil</span>':''}
+        <div class="gitem-date">${ph.date?esc(fmtDate(ph.date)):'Sans date'}</div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+function photosForTarget(t){
+  if(t.type==='massif')return massifPhotos(t.massif);
+  const p=plants.find(x=>x.id===t.plantId);return p?plantPhotos(p):[];
+}
+// Clics sur une bande de photos (délégation)
+function handlePhotoStripClick(e){
+  const add=e.target.closest('[data-add-photo]');
+  if(add){e.stopPropagation();const t=JSON.parse(decodeURIComponent(add.dataset.addPhoto));openPhotoUpload(t);return true;}
+  const it=e.target.closest('[data-photo-idx]');
+  if(it){e.stopPropagation();const t=JSON.parse(decodeURIComponent(it.dataset.photoTarget));const ph=photosForTarget(t)[+it.dataset.photoIdx];if(ph)openPhoto(ph,t);return true;}
+  return false;
+}
+
 function selectMassif(m){currentMassif=m;renderTabs();renderGrid();}
+
+// ── ACCUEIL : tous les massifs ─────────────────────────────────────
+function renderAccueil(){
+  const view=document.getElementById('accueilView');
+  if(!plants.length){view.innerHTML=`<div class="empty">🌱<br><br>Aucune plante pour l'instant</div>`;return;}
+  const now=new Date().getMonth()+1;
+  const enFleur=plants.filter(p=>p.florDebut&&p.florFin&&(p.florDebut<=p.florFin?now>=p.florDebut&&now<=p.florFin:now>=p.florDebut||now<=p.florFin));
+  const sansMassif=plants.filter(p=>!p.massifs.length);
+  const sections=MASSIFS.map(m=>({name:m,list:plants.filter(p=>p.massifs.includes(m))}));
+  if(sansMassif.length)sections.push({name:'',list:sansMassif});
+  const nbPhotos=photos.length;
+  let html=`<div class="home-head">
+    <div class="home-title">Mon jardin</div>
+    <div class="home-stats">${MASSIFS.length} massif${MASSIFS.length>1?'s':''} · ${plants.length} plante${plants.length>1?'s':''}${nbPhotos?` · ${nbPhotos} photo${nbPhotos>1?'s':''}`:''}</div>
+  </div>`;
+  if(enFleur.length){
+    html+=`<div class="home-bloom"><div class="msec-sub">🌸 En fleurs en ${MOIS[now-1].toLowerCase()}</div>
+      <div class="chips">${enFleur.map(p=>`<button class="chip" data-id="${esc(p.id)}">${getIcon(p.nom)} ${esc(p.nom)}</button>`).join('')}</div></div>`;
+  }
+  html+=sections.map(s=>{
+    const mPh=s.name?massifPhotos(s.name):[];
+    const cover=mPh[0];
+    const withPhoto=s.list.filter(p=>p.photo).slice(0,4);
+    let coverHtml;
+    if(cover)coverHtml=`<img src="${esc(photoSrc(cover,1200))}" alt="" loading="lazy">`;
+    else if(withPhoto.length)coverHtml=`<div class="msec-mosaic n${withPhoto.length}">${withPhoto.map(p=>`<img src="${esc(p.photo)}" alt="" loading="lazy">`).join('')}</div>`;
+    else coverHtml=`<div class="msec-ph">🌿</div>`;
+    const meta=[`${s.list.length} plante${s.list.length>1?'s':''}`];
+    if(mPh.length)meta.push(`${mPh.length} photo${mPh.length>1?'s':''} · dernière le ${fmtDate(cover.date)}`);
+    const encM=encodeURIComponent(s.name);
+    return `<section class="msec">
+      <div class="msec-cover" ${s.name?`data-open-massif="${encM}"`:''}>
+        ${coverHtml}
+        <div class="msec-ov"></div>
+        <div class="msec-info"><div class="msec-name">${s.name?esc(s.name):'Sans massif'}</div><div class="msec-meta">${esc(meta.join(' · '))}</div></div>
+        ${s.name?`<button class="msec-cam" data-add-photo="${encodeURIComponent(JSON.stringify({type:'massif',massif:s.name}))}">📷 Photo du massif</button>`:''}
+      </div>
+      ${mPh.length>1?`<div class="msec-photos">${photoStrip(mPh,{type:'massif',massif:s.name})}</div>`:''}
+      <div class="hscroll wrap">${s.list.map(p=>plantCard(p,true)).join('')}</div>
+    </section>`;
+  }).join('');
+  view.innerHTML=html;
+  hydrateWiki(view);
+}
 
 // ── VUE FLORAISON ANNUELLE ────────────────────────────────────────
 function renderFloraison(plantsList){
@@ -837,17 +1084,25 @@ function renderMultFields(){
 function addMult(m){multEntries.push({method:m,periodStart:'',periodEnd:'',tip:''});renderMultFields();}
 function removeMult(i){multEntries.splice(i,1);renderMultFields();}
 
-function handlePhoto(file){
+let currentPhotoDate='';
+async function handlePhoto(file){
   if(!file)return;
-  const fr=new FileReader();
-  fr.onload=async e=>{
-    const compressed=await compressPhoto(e.target.result);
-    currentPhoto=compressed;
-    const pr=document.getElementById('pprev');
-    pr.src=currentPhoto;pr.style.display='block';
-    document.getElementById('plabel').textContent='📷 Changer';
-  };
-  fr.readAsDataURL(file);
+  if(!PHOTO_SCRIPT_URL){showToast('Photos indisponibles : le script des photos n\'est pas encore installé');return;}
+  currentPhotoDate=(await readPhotoDate(file)).date;
+  currentPhoto=await compressPhoto(await fileToDataUrl(file),1600);
+  const pr=document.getElementById('pprev');
+  pr.src=currentPhoto;pr.style.display='block';
+  document.getElementById('plabel').textContent='📷 Changer';
+}
+function fileToDataUrl(file){
+  return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=e=>res(e.target.result);fr.onerror=rej;fr.readAsDataURL(file);});
+}
+// Envoie la photo du formulaire vers Drive et renvoie son URL (ou l'URL existante)
+async function uploadFormPhoto(plantId,nom,fallback){
+  if(!currentPhoto||!currentPhoto.startsWith('data:'))return currentPhoto||fallback||'';
+  const d=await photoScriptCall({action:'upload',type:'plante',plantId,plantNom:nom,date:currentPhotoDate||isoDate(new Date()),data:currentPhoto});
+  photos.push(d.photo);
+  return d.photo.url;
 }
 
 // ── AI GENERATE ───────────────────────────────────────────────────
@@ -882,6 +1137,8 @@ async function savePlant(){
     // Modification : préserver toutes les colonnes botaniques existantes
     const p=plants.find(x=>x.id===editingId);
     if(!p){showToast('Plante introuvable');btn.innerHTML='Enregistrer';btn.disabled=false;return;}
+    try{currentPhoto=await uploadFormPhoto(p.id,nom,p.photo);}
+    catch(e){showToast('Photo non enregistrée : '+e.message);btn.innerHTML='Enregistrer';btn.disabled=false;return;}
     const row=[
       p.id,
       document.getElementById('fMassifs').value,
@@ -913,8 +1170,11 @@ async function savePlant(){
     }catch(e){showToast('Erreur : '+e.message);}
   }else{
     // Nouvelle plante : colonnes botaniques vides
+    const newId=Date.now().toString(36);
+    try{currentPhoto=await uploadFormPhoto(newId,nom,'');}
+    catch(e){showToast('Photo non enregistrée : '+e.message);btn.innerHTML='Enregistrer';btn.disabled=false;return;}
     const row=[
-      Date.now().toString(36),
+      newId,
       document.getElementById('fMassifs').value,nom,
       document.getElementById('fLatin').value,'','','','','','',
       document.getElementById('fExpo').value,document.getElementById('fArro').value,
@@ -1049,7 +1309,7 @@ function renderMois(){
 
 // ── UTILS ─────────────────────────────────────────────────────────
 function closeOverlay(id){document.getElementById(id).classList.remove('open');}
-async function syncNow(){await Promise.all([loadAll(),fetchHistorique()]);renderTabs();await renderGrid();if(currentNav==='calendrier')renderCal();if(currentNav==='mois')renderMois();if(currentNav==='historique'){populateHistoPlantFilter();renderHistorique();}if(currentNav==='maladies')renderMaladies();}
+async function syncNow(){await Promise.all([loadAll(),fetchHistorique(),loadPhotos()]);renderTabs();await renderGrid();if(currentNav==='accueil')renderAccueil();if(currentNav==='calendrier')renderCal();if(currentNav==='mois')renderMois();if(currentNav==='historique'){populateHistoPlantFilter();renderHistorique();}if(currentNav==='maladies')renderMaladies();}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200);}
 
 
@@ -1247,31 +1507,90 @@ async function saveIntervention(){
 }
 
 // ── GALERIE PHOTOS ───────────────────────────────────────────────
-function parsePhotos(p){
-  // photo principale + photos supplémentaires (colonne Photos, séparées par |)
-  const extras=(p.photosExtra||'').split('|').map(s=>s.trim()).filter(Boolean);
-  const all=[];
-  if(p.photo)all.push(p.photo);
-  all.push(...extras);
-  return all;
-}
-
 function renderGallery(p){
-  const photos=parsePhotos(p);
-  if(!photos.length&&!true)return'';
-  return `<div class="dsec">
-    <div class="dsec-title">Photos</div>
-    <div class="gallery-wrap">
-      ${photos.map((src,i)=>`<img class="gallery-thumb ${i===0?'main':''}" src="${src}" alt="Photo ${i+1}" data-src="${src}">`).join('')}
-      <div class="gallery-add" id="galleryAdd_${p.id}" data-plant-id="${p.id}" title="Ajouter une photo">＋</div>
-    </div>
-    <input type="file" id="galleryInput_${p.id}" accept="image/*" style="display:none">
+  const list=plantPhotos(p);
+  return `<div class="dsec" id="dGallery">
+    <div class="dsec-title">📷 Photos${list.length?` · ${list.length}`:''}</div>
+    ${photoStrip(list,{type:'plante',plantId:p.id},p.photo)}
+    ${list.length?'':'<div class="gallery-empty">Aucune photo pour l\'instant. Ajoute-en une : elle sera datée automatiquement.</div>'}
   </div>`;
 }
 
-function openLightbox(src){
-  document.getElementById('lightboxImg').src=src;
+// Visionneuse : photo + date + actions
+let lbPhoto=null,lbTarget=null;
+function openLightbox(src){openPhoto({legacy:true,url:src,date:''},null);}
+function openPhoto(ph,target){
+  lbPhoto=ph;lbTarget=target;
+  document.getElementById('lightboxImg').src=photoSrc(ph,2000);
+  const plant=target&&target.type==='plante'?plants.find(x=>x.id===target.plantId):null;
+  const isProfile=plant&&plant.photo===ph.url;
+  const who=plant?plant.nom:(target&&target.massif)||'';
+  let bar=`<div class="lb-cap">${who?`<b>${esc(who)}</b> · `:''}${ph.date?esc(fmtDate(ph.date)):'Sans date'}${ph.note?` · ${esc(ph.note)}`:''}</div>`;
+  if(plant&&!ph.legacy&&!isProfile)bar+=`<button class="btn btn-o" id="lbProfile">★ Photo de profil</button>`;
+  if(plant&&isProfile)bar+=`<span class="lb-cap" style="width:auto">★ Photo de profil actuelle</span>`;
+  if(!ph.legacy&&ph.id)bar+=`<button class="btn btn-r" id="lbDelete" style="margin-right:0">🗑 Supprimer</button>`;
+  document.getElementById('lbBar').innerHTML=bar;
   document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox(){document.getElementById('lightbox').classList.remove('open');lbPhoto=null;lbTarget=null;}
+
+async function setProfilePhoto(plantId,url){
+  await photoScriptCall({action:'setProfile',plantId,url});
+  const p=plants.find(x=>x.id===plantId);if(p)p.photo=url;
+}
+async function deletePhoto(ph){
+  const d=await photoScriptCall({action:'delete',id:ph.id});
+  photos=photos.filter(x=>x.id!==ph.id);
+  if(d.profileCleared){const p=plants.find(x=>x.id===ph.plantId);if(p)p.photo='';}
+}
+
+// Ajout d'une photo (plante ou massif) : choix du fichier → date + légende → envoi
+let pendingUpload=null;
+function openPhotoUpload(target,opts={}){
+  if(!PHOTO_SCRIPT_URL){showToast('Photos indisponibles : le script des photos n\'est pas encore installé');return;}
+  pendingUpload={target,opts};
+  const inp=document.getElementById('photoFileInput');inp.value='';inp.click();
+}
+async function onPhotoFileChosen(file){
+  if(!file||!pendingUpload)return;
+  const{target,opts}=pendingUpload;
+  showToast('Préparation de la photo…');
+  let date,src,data;
+  try{[{date,src},data]=await Promise.all([readPhotoDate(file),fileToDataUrl(file).then(d=>compressPhoto(d,1600))]);}
+  catch(e){showToast('Impossible de lire cette photo');return;}
+  pendingUpload.data=data;
+  const plant=target.type==='plante'?plants.find(x=>x.id===target.plantId):null;
+  document.getElementById('photoTitle').textContent=plant?`Photo · ${plant.nom}`:`Photo du massif · ${target.massif}`;
+  document.getElementById('photoPrev').src=data;
+  document.getElementById('photoDate').value=date;
+  document.getElementById('photoDateHint').textContent=src==='exif'?'Date de prise de vue lue dans la photo.':'Date du fichier : corrige-la si besoin.';
+  document.getElementById('photoNote').value='';
+  document.getElementById('photoProfileRow').style.display=plant?'flex':'none';
+  document.getElementById('photoProfile').checked=!!(plant&&(opts.profile||!plant.photo));
+  document.getElementById('photoOverlay').classList.add('open');
+}
+async function savePhotoUpload(){
+  if(!pendingUpload||!pendingUpload.data)return;
+  const{target,data}=pendingUpload;
+  const btn=document.getElementById('btnSavePhoto');btn.innerHTML='<span class="spin"></span>';btn.disabled=true;
+  const plant=target.type==='plante'?plants.find(x=>x.id===target.plantId):null;
+  const setProfile=!!plant&&document.getElementById('photoProfile').checked;
+  try{
+    const d=await photoScriptCall({action:'upload',type:target.type,plantId:target.plantId||'',plantNom:plant?plant.nom:'',massif:target.massif||'',
+      date:document.getElementById('photoDate').value||isoDate(new Date()),note:document.getElementById('photoNote').value.trim(),setProfile,data});
+    photos.push(d.photo);
+    if(setProfile)plant.photo=d.photo.url;
+    closeOverlay('photoOverlay');pendingUpload=null;
+    showToast('Photo enregistrée ✓');
+    refreshAfterPhotoChange();
+  }catch(e){showToast('Erreur : '+e.message);}
+  btn.innerHTML='Enregistrer';btn.disabled=false;
+}
+// Met à jour les vues ouvertes sans tout recharger
+function refreshAfterPhotoChange(){
+  if(document.getElementById('detOverlay').classList.contains('open')&&viewingId)openDetail(viewingId);
+  if(currentNav==='accueil')renderAccueil();
+  if(currentNav==='massifs')renderGrid();
 }
 
 // ── MALADIES ─────────────────────────────────────────────────────
@@ -1311,10 +1630,9 @@ openDetail = async function(id){
   await _origOpenDetail(id);
   const p=plants.find(x=>x.id===id);if(!p)return;
 
-  // Inject gallery after hero
+  // Galerie datée juste sous la photo de profil
   const dbody=document.getElementById('dbody');
-  const galleryHtml=renderGallery(p);
-  dbody.insertAdjacentHTML('afterbegin',galleryHtml);
+  dbody.insertAdjacentHTML('afterbegin',renderGallery(p));
 
   // Inject maladies section if data exists
   const maladies=MALADIES_DB[p.nom];
@@ -1350,94 +1668,24 @@ openDetail = async function(id){
     </div>`);
   }
 
-  // Gallery events
-  const galleryWrap=dbody.querySelector('.gallery-wrap');
-  if(galleryWrap){
-    galleryWrap.addEventListener('click',e=>{
-      const thumb=e.target.closest('.gallery-thumb');
-      if(thumb)openLightbox(thumb.dataset.src);
-      const addBtn=e.target.closest('.gallery-add');
-      if(addBtn){const inp=document.getElementById('galleryInput_'+addBtn.dataset.plantId);if(inp)inp.click();}
-    });
-    const gInp=document.getElementById('galleryInput_'+id);
-    if(gInp)gInp.addEventListener('change',e=>handleGalleryUpload(e,p));
-  }
+  dbody.querySelector('#dGallery').addEventListener('click',handlePhotoStripClick);
 };
 
-async function handleGalleryUpload(e,p){
-  const file=e.target.files[0];if(!file)return;
-  showToast('Upload en cours…');
-  const fr=new FileReader();
-  fr.onload=async ev=>{
-    showToast('Compression en cours…');
-    const newPhoto=await compressPhoto(ev.target.result);
-    const extras=(p.photosExtra||'').split('|').filter(Boolean);
-    try{
-      if(!p.photo){
-        const row=await buildRowForUpdate(p,{photo:newPhoto});
-        await scriptCall({action:'update',rowIndex:p.rowIndex,row});
-      }else{
-        extras.push(newPhoto);
-        const row=await buildRowForUpdate(p,{photosExtra:extras.join('|')});
-        await scriptCall({action:'update',rowIndex:p.rowIndex,row});
-      }
-      showToast('Photo ajoutée ✓');
-      await syncNow();
-      closeOverlay('detOverlay');
-      setTimeout(()=>openDetail(p.id),300);
-    }catch(err){
-      showToast('Erreur upload : '+err.message);
-    }
-  };
-  fr.readAsDataURL(file);
-}
-
-async function compressPhoto(dataUrl,maxWidth=800){
-  return new Promise(resolve=>{
+// Redimensionne une photo (côté le plus long ≤ maxSize) et la convertit en JPEG
+async function compressPhoto(dataUrl,maxSize=1600){
+  return new Promise((resolve,reject)=>{
     const img=new Image();
     img.onload=()=>{
       const canvas=document.createElement('canvas');
-      const scale=Math.min(1,maxWidth/img.width);
-      canvas.width=img.width*scale;
-      canvas.height=img.height*scale;
+      const scale=Math.min(1,maxSize/Math.max(img.width,img.height));
+      canvas.width=Math.round(img.width*scale);
+      canvas.height=Math.round(img.height*scale);
       canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
-      resolve(canvas.toDataURL('image/jpeg',0.7));
+      resolve(canvas.toDataURL('image/jpeg',0.82));
     };
+    img.onerror=()=>reject(new Error('image illisible'));
     img.src=dataUrl;
   });
-}
-
-async function buildRowForUpdate(p,overrides={}){
-  const o={...p,...overrides};
-  const tags=Array.isArray(o.tags)?o.tags:(Array.isArray(p.tags)?p.tags:[]);
-  const mult=o.mult||p.mult||[];
-  const actions=o.actions||p.actions||[];
-  return[
-    o.id,
-    (o.massifs||p.massifs||[]).join(', '),
-    o.nom||p.nom,
-    o.latin||p.latin||'',
-    o.type||p.type||'',o.croissance||p.croissance||'',o.longevite||p.longevite||'',
-    o.etalement||p.etalement||'',o.rusticite||p.rusticite||'',o.parfum||p.parfum||'',
-    o.expo||p.expo||'',o.arrosage||p.arrosage||'',o.floraison||p.floraison||'',
-    o.florDebut||p.florDebut||0,o.florFin||p.florFin||0,
-    o.couleur||p.couleur||'',o.sol||p.sol||'',o.taille||p.taille||'',
-    o.arrosageDetail||p.arrosageDetail||'',o.solDetail||p.solDetail||'',
-    o.plantationDetail||p.plantationDetail||'',o.tailleDetail||p.tailleDetail||'',
-    o.engrais||p.engrais||'',o.bonsavoir||p.bonsavoir||'',o.toxique||p.toxique||'',
-    tags.join(';'),
-    JSON.stringify(mult),
-    actions.map(a=>{
-      const mois=Array.isArray(a.mois)?a.mois.join('-'):'';
-      return (a.type||'')+':'+mois+':'+(a.tip||'');
-    }).join('|'),
-    o.datesPlantation||p.datesPlantation||'',
-    o.datesSemis||p.datesSemis||'',
-    o.datesTaille||p.datesTaille||'',
-    o.notes||p.notes||'',
-    o.photo||p.photo||'',
-    o.photosExtra||p.photosExtra||''
-  ];
 }
 // ── EVENTS ────────────────────────────────────────────────────────
 document.querySelectorAll('[data-goto]').forEach(t=>t.addEventListener('click',()=>showNav(t.dataset.goto)));
@@ -1446,7 +1694,31 @@ document.getElementById('btnCloseMenu').addEventListener('click',closeMenu);
 document.getElementById('mov').addEventListener('click',closeMenu);
 document.getElementById('mAdd').addEventListener('click',()=>{closeMenu();openAdd();});
 document.getElementById('mSync').addEventListener('click',()=>{closeMenu();syncNow();});
-document.getElementById('btnHome').addEventListener('click',()=>showNav('massifs'));
+document.getElementById('btnHome').addEventListener('click',()=>showNav('accueil'));
+document.getElementById('accueilView').addEventListener('click',e=>{
+  if(handlePhotoStripClick(e))return;
+  const m=e.target.closest('[data-open-massif]');
+  if(m){currentMassif=decodeURIComponent(m.dataset.openMassif);showNav('massifs');return;}
+  const c=e.target.closest('[data-id]');if(c)openDetail(c.dataset.id);
+});
+document.getElementById('massifPhotos').addEventListener('click',handlePhotoStripClick);
+document.getElementById('btnHeroCam').addEventListener('click',()=>{if(viewingId)openPhotoUpload({type:'plante',plantId:viewingId},{profile:true});});
+document.getElementById('photoFileInput').addEventListener('change',e=>onPhotoFileChosen(e.target.files[0]));
+document.getElementById('btnSavePhoto').addEventListener('click',savePhotoUpload);
+document.getElementById('btnCancelPhoto').addEventListener('click',()=>{closeOverlay('photoOverlay');pendingUpload=null;});
+document.getElementById('btnClosePhoto').addEventListener('click',()=>{closeOverlay('photoOverlay');pendingUpload=null;});
+document.getElementById('lbBar').addEventListener('click',async e=>{
+  const ph=lbPhoto,t=lbTarget;if(!ph)return;
+  if(e.target.closest('#lbProfile')){
+    try{await setProfilePhoto(t.plantId,ph.url);showToast('Photo de profil mise à jour ✓');closeLightbox();refreshAfterPhotoChange();}
+    catch(err){showToast('Erreur : '+err.message);}
+  }
+  if(e.target.closest('#lbDelete')){
+    if(!confirm('Supprimer cette photo ? (elle ira dans la corbeille de ton Google Drive)'))return;
+    try{await deletePhoto(ph);showToast('Photo supprimée');closeLightbox();refreshAfterPhotoChange();}
+    catch(err){showToast('Erreur : '+err.message);}
+  }
+});
 document.getElementById('mbar').addEventListener('click',e=>{const t=e.target.closest('[data-massif]');if(t)selectMassif(t.dataset.massif);});
 document.getElementById('grid').addEventListener('click',e=>{const c=e.target.closest('[data-id]');if(c)openDetail(c.dataset.id);});
 document.getElementById('calView').addEventListener('click',e=>{const c=e.target.closest('[data-id]');if(c)openDetail(c.dataset.id);});
@@ -1471,8 +1743,8 @@ document.getElementById('pzone').addEventListener('dragover',e=>{e.preventDefaul
 document.getElementById('pzone').addEventListener('dragleave',e=>{e.currentTarget.style.borderColor='';});
 document.getElementById('pzone').addEventListener('drop',e=>{e.preventDefault();e.currentTarget.style.borderColor='';handlePhoto(e.dataTransfer.files[0]);});
 // New feature events
-document.getElementById('lightboxClose').addEventListener('click',()=>document.getElementById('lightbox').classList.remove('open'));
-document.getElementById('lightbox').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove('open');});
+document.getElementById('lightboxClose').addEventListener('click',closeLightbox);
+document.getElementById('lightbox').addEventListener('click',e=>{if(e.target===e.currentTarget)closeLightbox();});
 document.getElementById('btnNewIntervention').addEventListener('click',()=>openNewIntervention('',''));
 document.getElementById('btnSaveHisto').addEventListener('click',saveIntervention);
 document.getElementById('btnCloseHisto').addEventListener('click',()=>closeOverlay('histoOverlay'));
