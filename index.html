@@ -57,10 +57,9 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 1.2
 .card:hover .card-img{transform:scale(1.06)}
 .card-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:52px;background:linear-gradient(135deg,var(--bg3),var(--bg4))}
 .card-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(5,10,5,.92) 0%,rgba(5,10,5,.15) 55%,transparent 100%)}
-.card-body{position:absolute;bottom:0;left:0;right:0;padding:.875rem}
-.card-name{font-family:'Playfair Display',serif;font-size:15px;color:#fff;line-height:1.25;margin-bottom:3px}
-.card-latin{font-size:11px;color:rgba(255,255,255,.45);font-style:italic;margin-bottom:6px}
-.card-tags{display:flex;flex-wrap:wrap;gap:3px}
+.card-body{position:absolute;bottom:0;left:0;right:0;padding:1rem .75rem;text-align:center}
+.card-name{font-family:'DM Sans',sans-serif;font-weight:700;font-size:19px;letter-spacing:-.01em;color:#fff;line-height:1.15;text-shadow:0 1px 8px rgba(0,0,0,.5);overflow-wrap:anywhere}
+.card-flor{font-size:12px;font-weight:500;color:rgba(255,255,255,.8);margin-top:5px;text-shadow:0 1px 6px rgba(0,0,0,.5)}
 .ptag{font-size:10px;padding:2px 7px;border-radius:99px;font-weight:600;border:1px solid}
 .ptag-g{background:rgba(74,140,74,.25);color:#a8e0a8;border-color:rgba(74,140,74,.35)}
 .ptag-y{background:rgba(245,158,11,.2);color:#fcd87a;border-color:rgba(245,158,11,.28)}
@@ -253,7 +252,8 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 1.2
 .hscroll{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding:2px 2px 8px;scroll-snap-type:x proximity}
 .hscroll::-webkit-scrollbar{display:none}
 .hscroll .card{width:132px;flex-shrink:0;scroll-snap-align:start}
-.hscroll .card-name{font-size:14px}
+.hscroll .card-name{font-size:16px}
+.hscroll .card-flor{font-size:11px}
 @media(min-width:900px){.hscroll.wrap{flex-wrap:wrap;overflow:visible}}
 .massif-photos{margin-bottom:1.25rem}
 /* HISTORIQUE */
@@ -750,19 +750,22 @@ function renderTabs(){
 }
 
 // Carte d'une plante (page massif et accueil)
-function plantCard(p,compact){
-  const hasMult=p.mult&&p.mult.length;
+// Mois de floraison : « Juin – Oct » d'après les colonnes début/fin, sinon le texte saisi
+const MOIS_CARTE=['Janv.','Févr.','Mars','Avril','Mai','Juin','Juil.','Août','Sept.','Oct.','Nov.','Déc.'];
+function florLabel(p){
+  const d=p.florDebut,f=p.florFin,M=MOIS_CARTE;
+  if(d>=1&&d<=12&&f>=1&&f<=12)return d===f?M[d-1]:`${M[d-1]} – ${M[f-1]}`;
+  if(d>=1&&d<=12)return M[d-1];
+  return p.floraison||'';
+}
+function plantCard(p){
+  const flor=florLabel(p);
   return `<div class="card" data-id="${esc(p.id)}">
     ${p.photo?`<img class="card-img" src="${esc(p.photo)}" alt="${esc(p.nom)}" loading="lazy">`:`<div class="card-ph" data-wiki="${esc(p.id)}">${getIcon(p.nom)}</div>`}
     <div class="card-ov"></div>
     <div class="card-body">
       <div class="card-name">${esc(p.nom)}</div>
-      <div class="card-latin">${esc(p.latin)}</div>
-      ${compact?'':`<div class="card-tags">
-        ${p.floraison?`<span class="ptag ptag-g">${esc(p.floraison)}</span>`:''}
-        ${p.expo?`<span class="ptag ptag-y">${esc(p.expo)}</span>`:''}
-        ${hasMult?`<span class="ptag ptag-p">🌱</span>`:''}
-      </div>`}
+      ${flor?`<div class="card-flor">🌸 ${esc(flor)}</div>`:''}
     </div>
   </div>`;
 }
