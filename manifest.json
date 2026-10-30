@@ -1,7 +1,7 @@
 {
-  "name": "Mon Jardin",
-  "short_name": "Jardin",
-  "description": "Gestion des plantes par massif",
+  "name": "Bibou's Garden",
+  "short_name": "Bibou's Garden",
+  "description": "Le jardin de Bibou : plantes, massifs et photos",
   "start_url": "/mon-jardin/",
   "scope": "/mon-jardin/",
   "display": "standalone",
