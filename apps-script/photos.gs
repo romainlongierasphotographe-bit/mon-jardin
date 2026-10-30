@@ -159,16 +159,22 @@ function fiche_(nom, latin) {
   const json = String(text).replace(/^[\s\S]*?(\{)/, '$1').replace(/\}[^}]*$/, '}');
   let fiche;
   try { fiche = JSON.parse(json); } catch (e) { throw new Error('réponse de l\'IA illisible'); }
-  cache.put(cacheKey, JSON.stringify(fiche), 21600);
+  // On ne garde en mémoire que les fiches sûres (un échec ou un doute doit pouvoir être relancé)
+  if (fiche.trouve !== false && fiche.confiance === 'haute') cache.put(cacheKey, JSON.stringify(fiche), 21600);
   return { fiche };
 }
 
 function fichePrompt_(nom, latin) {
-  return `Tu es un jardinier professionnel français. Donne la fiche pratique de la plante « ${nom}${latin ? ` » (nom latin indiqué : ${latin})` : ' »'}, pour un jardin en Dordogne (Périgord, sud-ouest de la France : climat océanique doux, étés chauds et secs, gelées d'hiver jusqu'à -10 °C environ). Si le nom désigne une variété ou un cultivar, adapte la fiche à cette variété. Les mois et conseils doivent correspondre à ce climat.
+  return `Tu es un jardinier professionnel français. Donne la fiche pratique de la plante « ${nom}${latin ? ` » (nom latin indiqué : ${latin})` : ' »'}, pour un jardin en Dordogne (Périgord, sud-ouest de la France : climat océanique doux, étés chauds et secs, gelées d'hiver jusqu'à -10 °C environ). Les mois et conseils doivent correspondre à ce climat.
+
+Le nom saisi peut être un nom latin, un nom vernaculaire français (parfois régional), un nom commercial de jardinerie, une variété ou un cultivar, et il peut contenir des fautes d'orthographe. Identifie l'espèce (et la variété si elle est précisée) la plus probable et remplis TOUJOURS la fiche pour elle, même si tu n'es pas totalement sûr : indique alors ton niveau de confiance et propose les autres plantes possibles. Si le nom désigne une variété précise que tu ne connais pas, base-toi sur l'espèce ou le genre et signale-le dans "remarque". Ne mets "trouve": false que si le nom ne correspond vraiment à aucune plante.
 
 Réponds UNIQUEMENT avec un objet JSON valide, sans texte autour, avec exactement ces clés :
 {
-  "trouve": true si tu reconnais la plante avec certitude, sinon false,
+  "trouve": true, ou false seulement si le nom ne correspond à aucune plante,
+  "confiance": "haute" si l'identification est sûre, "moyenne" si c'est l'interprétation la plus probable, "faible" si c'est une supposition,
+  "remarque": "phrase courte expliquant ton interprétation si la confiance n'est pas haute ou si la fiche porte sur l'espèce plutôt que la variété, sinon vide",
+  "propositions": [jusqu'à 4 autres plantes que ce nom pourrait désigner, sous la forme {"nomCommun": "...", "nomLatin": "..."} ; liste vide si l'identification est sûre et sans ambiguïté],
   "nomCommun": "nom commun français usuel",
   "nomLatin": "Genre espèce 'Cultivar' si connu",
   "type": "catégorie courte : Arbuste, Arbuste persistant, Vivace, Annuelle, Bisannuelle, Bulbe, Arbre, Arbre fruitier, Grimpante, Graminée, Aromatique, Agrume, Couvre-sol, Fougère, Potagère…",

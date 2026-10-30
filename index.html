@@ -318,6 +318,10 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 1.2
 .gen-sum.show{display:block}
 .gen-sum.warn{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.35)}
 .gen-sum b{color:var(--cream)}
+.gen-alt{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
+.gen-alt-l{width:100%;font-size:12px;color:var(--cream3)}
+.gen-alt .chip{font-size:12.5px;padding:6px 11px}
+.gen-alt .chip i{color:var(--cream3)}
 /* AJOUT PHOTO */
 .ph-prev{width:100%;max-height:280px;object-fit:contain;border-radius:var(--rs);background:var(--bg3);margin-bottom:1rem;display:block}
 .ph-check{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--cream2);margin-bottom:1rem;cursor:pointer}
@@ -1237,8 +1241,8 @@ async function uploadFormPhoto(plantId,nom,fallback){
 }
 
 // ── FICHE AUTOMATIQUE (IA via le script Google) ──────────────────
-let genData=null,genBusy=false,genFor='';
-function resetGen(){genData=null;genFor='';const s=document.getElementById('genSummary');s.className='gen-sum';s.innerHTML='';}
+let genData=null,genBusy=false,genFor='',genFilled=[],genMult=false;
+function resetGen(){genData=null;genFor='';genFilled=[];genMult=false;const s=document.getElementById('genSummary');s.className='gen-sum';s.innerHTML='';}
 function pick(v,allowed){v=String(v||'').trim();return allowed.find(a=>a.toLowerCase()===v.toLowerCase())||'';}
 function moisNom(v){v=String(v||'').trim().toLowerCase();return MOIS.find(m=>m.toLowerCase()===v)||MOIS.find(m=>m.toLowerCase().startsWith(v.slice(0,3))&&v.length>=3)||'';}
 function clean(v){return String(v??'').replace(/\|/g,'/').trim();}
@@ -1256,8 +1260,11 @@ function normalizeFiche(f){
     mois:[...new Set((Array.isArray(a.mois)?a.mois:[]).map(monthNum).filter(Boolean))].map(n=>n-1),
     tip:clean(a.conseil)
   })).filter(a=>a.mois.length);
+  const props=(Array.isArray(f.propositions)?f.propositions:[]).map(x=>({nom:clean(x&&x.nomCommun),latin:clean(x&&x.nomLatin)})).filter(x=>x.nom||x.latin).slice(0,4);
   return{
     trouve:f.trouve!==false,
+    confiance:pick(f.confiance,['haute','moyenne','faible'])||'haute',
+    remarque:clean(f.remarque),propositions:props,
     nomCommun:clean(f.nomCommun),latin:clean(f.nomLatin),type:clean(f.type),croissance:clean(f.croissance),
     longevite:clean(f.longevite),taille:clean(f.hauteur),etalement:clean(f.etalement),rusticite:clean(f.rusticite),
     parfum:clean(f.parfum),expo:pick(f.exposition,['Plein soleil','Mi-ombre','Ombre']),
@@ -1272,7 +1279,7 @@ function normalizeFiche(f){
 
 // Remplit les champs vides du formulaire ; le reste est gardé pour l'enregistrement
 function applyFiche(g){
-  const fill=(id,v)=>{const el=document.getElementById(id);if(v&&!el.value){el.value=v;return el.value===v;}return false;};
+  const fill=(id,v)=>{const el=document.getElementById(id);if(v&&!el.value){el.value=v;if(el.value===v){genFilled.push(id);return true;}el.value='';}return false;};
   const filled=[];
   if(fill('fLatin',g.latin))filled.push('nom latin');
   if(fill('fExpo',g.expo))filled.push(g.expo.toLowerCase());
@@ -1281,15 +1288,32 @@ function applyFiche(g){
   if(fill('fCoul',g.couleur))filled.push('couleurs');
   if(fill('fSol',g.sol))filled.push('sol');
   if(fill('fTaille',g.taille))filled.push('hauteur');
-  if(!multEntries.length&&g.mult.length){multEntries=g.mult.map(m=>({...m}));renderMultFields();filled.push('multiplication');}
+  if(!multEntries.length&&g.mult.length){multEntries=g.mult.map(m=>({...m}));renderMultFields();genMult=true;filled.push('multiplication');}
   const extra=[g.type&&'type',g.rusticite&&'rusticité',(g.arrosageDetail||g.solDetail||g.plantationDetail||g.tailleDetail||g.engrais)&&'conseils d\'entretien',g.bonsavoir&&'astuces',g.toxique&&'toxicité'].filter(Boolean);
   const s=document.getElementById('genSummary');
-  s.className='gen-sum show';
-  s.innerHTML=`<b>✦ Fiche remplie${g.latin?` · <i>${esc(g.latin)}</i>`:''}</b><br>
+  const doute=g.confiance!=='haute';
+  s.className='gen-sum show'+(doute?' warn':'');
+  s.innerHTML=`<b>${doute?'⚠️ Fiche à vérifier':'✦ Fiche remplie'}${g.latin?` · <i>${esc(g.latin)}</i>`:''}</b><br>
+    ${g.remarque?`${esc(g.remarque)}<br>`:''}
     ${filled.length?`Champs ajoutés : ${esc(filled.join(', '))}.<br>`:''}
     ${extra.length?`Ajoutés aussi dans la fiche : ${esc(extra.join(', '))}.<br>`:''}
     ${g.actions.length?`${g.actions.length} tâche${g.actions.length>1?'s':''} d'entretien ajoutée${g.actions.length>1?'s':''} au calendrier « Ce mois-ci ».`:''}
-    <br><span style="color:var(--cream3)">Vérifie et corrige si besoin avant d'enregistrer.</span>`;
+    <span style="display:block;margin-top:6px;color:var(--cream3)">Vérifie et corrige si besoin avant d'enregistrer.</span>
+    ${altChips(g.propositions,doute?'Ce n\'est pas la bonne plante ? Choisis :':'Autres plantes possibles :')}`;
+}
+// Boutons « autres plantes possibles »
+function altChips(list,label){
+  if(!list||!list.length)return'';
+  return `<div class="gen-alt"><div class="gen-alt-l">${esc(label)}</div>${list.map(x=>`<button type="button" class="chip" data-alt-nom="${esc(x.nom)}" data-alt-latin="${esc(x.latin)}">${esc(x.nom||x.latin)}${x.nom&&x.latin?` <i>${esc(x.latin)}</i>`:''}</button>`).join('')}</div>`;
+}
+// Choix d'une autre plante : on efface ce qui avait été rempli automatiquement et on relance
+function chooseAlt(nom,latin){
+  genFilled.forEach(id=>{document.getElementById(id).value='';});
+  if(genMult){multEntries=[];renderMultFields();}
+  genFilled=[];genMult=false;genData=null;
+  document.getElementById('fLatin').value=latin||'';
+  if(nom)document.getElementById('fNom').value=nom;
+  generateFiche(false);
 }
 
 async function generateFiche(auto){
@@ -1306,7 +1330,7 @@ async function generateFiche(auto){
     const g=normalizeFiche(d.fiche||{});
     if(!g.trouve){
       const s=document.getElementById('genSummary');s.className='gen-sum show warn';
-      s.innerHTML='<b>Espèce non reconnue avec certitude.</b><br>Précise le nom (variété, nom latin) puis relance.';
+      s.innerHTML='<b>Plante non reconnue.</b><br>'+(g.remarque?esc(g.remarque)+'<br>':'')+'Précise le nom (variété, nom latin) puis relance.'+altChips(g.propositions,'Tu pensais peut-être à :');
     }else{genData=g;applyFiche(g);}
   }catch(e){
     // Repli : recopier une plante déjà présente dans le jardin
@@ -1895,6 +1919,9 @@ document.getElementById('btnCancel').addEventListener('click',()=>closeOverlay('
 document.getElementById('btnSave').addEventListener('click',savePlant);
 document.getElementById('btnDel').addEventListener('click',deletePlant);
 document.getElementById('btnGen').addEventListener('click',()=>generateFiche(false));
+document.getElementById('genSummary').addEventListener('click',e=>{
+  const b=e.target.closest('[data-alt-latin]');if(b)chooseAlt(b.dataset.altNom,b.dataset.altLatin);
+});
 // Remplissage automatique dès que le nom est saisi (nouvelle plante)
 ['fNom','fLatin'].forEach(id=>document.getElementById(id).addEventListener('change',()=>{
   if(!editingId&&!genData&&document.getElementById('fNom').value.trim().length>=3)generateFiche(true);
