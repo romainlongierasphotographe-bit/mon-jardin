@@ -1,5 +1,5 @@
 /**
- * Mon Jardin — script des photos
+ * Mon Jardin — script compagnon (photos + fiches automatiques)
  * ------------------------------------------------------------------
  * Enregistre les photos dans Google Drive (dossier « Mon Jardin – Photos »)
  * et note chaque photo dans l'onglet « Photos » du Google Sheet :
@@ -29,6 +29,7 @@ function doPost(e) {
       case 'upload':     res = upload_(p); break;
       case 'setProfile': res = withLock_(() => setProfile_(p.plantId, p.url || '')); break;
       case 'delete':     res = withLock_(() => deletePhoto_(p.id)); break;
+      case 'fiche':      res = fiche_(p.nom || '', p.latin || ''); break;
       default: throw new Error('Action inconnue : ' + p.action);
     }
     res.ok = true;
@@ -129,6 +130,107 @@ function deletePhoto_(id) {
     }
   }
   throw new Error('Photo introuvable : ' + id);
+}
+
+// ── Fiche plante automatique (IA) ───────────────────────────────────
+// Clé à ajouter dans Paramètres du projet → Propriétés du script :
+//   GEMINI_API_KEY    (gratuit : https://aistudio.google.com/apikey)
+//   ou ANTHROPIC_API_KEY (Claude, payant à l'usage : https://console.anthropic.com)
+// Facultatif : GEMINI_MODEL (défaut gemini-flash-latest), CLAUDE_MODEL (défaut claude-haiku-5-5)
+
+function fiche_(nom, latin) {
+  nom = String(nom).trim(); latin = String(latin).trim();
+  if (!nom && !latin) throw new Error('Nom de plante manquant');
+  const cacheKey = 'fiche:' + (nom + '|' + latin).toLowerCase().slice(0, 200);
+  const cache = CacheService.getScriptCache();
+  const hit = cache.get(cacheKey);
+  if (hit) return { fiche: JSON.parse(hit), cache: true };
+
+  const props = PropertiesService.getScriptProperties();
+  const gemini = props.getProperty('GEMINI_API_KEY');
+  const claude = props.getProperty('ANTHROPIC_API_KEY');
+  if (!gemini && !claude) throw new Error('aucune clé IA configurée dans le script (GEMINI_API_KEY ou ANTHROPIC_API_KEY)');
+
+  const prompt = fichePrompt_(nom, latin);
+  const text = gemini
+    ? callGemini_(gemini, props.getProperty('GEMINI_MODEL') || 'gemini-flash-latest', prompt)
+    : callClaude_(claude, props.getProperty('CLAUDE_MODEL') || 'claude-haiku-5-5', prompt);
+
+  const json = String(text).replace(/^[\s\S]*?(\{)/, '$1').replace(/\}[^}]*$/, '}');
+  let fiche;
+  try { fiche = JSON.parse(json); } catch (e) { throw new Error('réponse de l\'IA illisible'); }
+  cache.put(cacheKey, JSON.stringify(fiche), 21600);
+  return { fiche };
+}
+
+function fichePrompt_(nom, latin) {
+  return `Tu es un jardinier professionnel français. Donne la fiche pratique de la plante « ${nom}${latin ? ` » (nom latin indiqué : ${latin})` : ' »'}, pour un jardin en Dordogne (Périgord, sud-ouest de la France : climat océanique doux, étés chauds et secs, gelées d'hiver jusqu'à -10 °C environ). Si le nom désigne une variété ou un cultivar, adapte la fiche à cette variété. Les mois et conseils doivent correspondre à ce climat.
+
+Réponds UNIQUEMENT avec un objet JSON valide, sans texte autour, avec exactement ces clés :
+{
+  "trouve": true si tu reconnais la plante avec certitude, sinon false,
+  "nomCommun": "nom commun français usuel",
+  "nomLatin": "Genre espèce 'Cultivar' si connu",
+  "type": "catégorie courte : Arbuste, Arbuste persistant, Vivace, Annuelle, Bisannuelle, Bulbe, Arbre, Arbre fruitier, Grimpante, Graminée, Aromatique, Agrume, Couvre-sol, Fougère, Potagère…",
+  "croissance": "Lente" | "Moyenne" | "Rapide",
+  "longevite": "court : Annuelle, Bisannuelle, Vivace, 10 à 20 ans, Plusieurs décennies…",
+  "hauteur": "hauteur adulte, ex. 60 cm – 1 m",
+  "etalement": "largeur adulte, ex. 50 cm",
+  "rusticite": "une catégorie suivie de la température entre parenthèses : Très rustique (-20 °C), Rustique (-12 °C), Semi-rustique (-5 °C) ou Sensible au gel (0 °C)",
+  "parfum": "Oui" | "Léger" | "Non",
+  "exposition": "Plein soleil" | "Mi-ombre" | "Ombre",
+  "arrosage": "Faible" | "Modéré" | "Régulier" | "Abondant",
+  "floraison": "période courte, ex. Juin – Sept. (vide si pas de floraison décorative)",
+  "floraisonDebut": numéro du mois de début de floraison (1 à 12, 0 si aucune),
+  "floraisonFin": numéro du mois de fin de floraison (1 à 12, 0 si aucune),
+  "couleur": "couleurs des fleurs, ex. Rose, blanc",
+  "sol": "type de sol en quelques mots, ex. Drainant, calcaire toléré",
+  "arrosageDetail": "2 à 4 conseils courts séparés par des points-virgules",
+  "solDetail": "2 à 4 conseils courts sur le sol et l'exposition, séparés par des points-virgules",
+  "plantationDetail": "2 à 4 conseils de plantation séparés par des points-virgules (période, espacement, profondeur…)",
+  "tailleDetail": "2 à 4 conseils de taille séparés par des points-virgules (vide si aucune taille)",
+  "engrais": "1 à 3 conseils de fertilisation séparés par des points-virgules",
+  "bonSavoir": "1 à 3 astuces utiles séparées par des points-virgules",
+  "toxicite": "vide si non toxique, sinon pour qui et quelles parties (ex. Toxique pour chats et chiens : feuilles et baies)",
+  "multiplication": [{"methode": "semis" | "bouturage" | "division" | "marcottage" | "greffe", "debut": "mois en toutes lettres, ex. Mars", "fin": "mois en toutes lettres", "conseil": "phrase courte"}],
+  "actions": [{"type": "taille" | "plantation" | "engrais" | "arrosage" | "semis" | "bouturage" | "division" | "autre", "mois": [numéros des mois concernés, 1 à 12], "conseil": "phrase courte"}]
+}
+"actions" est le calendrier d'entretien de l'année (3 à 6 tâches : taille, plantation, engrais, paillage, protection hivernale…). Tous les textes en français, concis.`;
+}
+
+function callGemini_(key, model, prompt) {
+  const res = UrlFetchApp.fetch('https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent', {
+    method: 'post', contentType: 'application/json', muteHttpExceptions: true,
+    headers: { 'x-goog-api-key': key },
+    payload: JSON.stringify({
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      generationConfig: { responseMimeType: 'application/json', temperature: 0.2 }
+    })
+  });
+  const d = JSON.parse(res.getContentText() || '{}');
+  if (res.getResponseCode() !== 200) throw new Error('Gemini : ' + ((d.error && d.error.message) || ('erreur ' + res.getResponseCode())));
+  const parts = (((d.candidates || [])[0] || {}).content || {}).parts || [];
+  const text = parts.map(x => x.text || '').join('');
+  if (!text) throw new Error('Gemini : réponse vide');
+  return text;
+}
+
+function callClaude_(key, model, prompt) {
+  const res = UrlFetchApp.fetch('https://api.anthropic.com/v1/messages', {
+    method: 'post', contentType: 'application/json', muteHttpExceptions: true,
+    headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01' },
+    payload: JSON.stringify({ model, max_tokens: 2000, temperature: 0.2, messages: [{ role: 'user', content: prompt }] })
+  });
+  const d = JSON.parse(res.getContentText() || '{}');
+  if (res.getResponseCode() !== 200) throw new Error('Claude : ' + ((d.error && d.error.message) || ('erreur ' + res.getResponseCode())));
+  const text = (d.content || []).filter(c => c.type === 'text').map(c => c.text).join('');
+  if (!text) throw new Error('Claude : réponse vide');
+  return text;
+}
+
+/** Test depuis l'éditeur : choisis testerFiche puis « Exécuter », le résultat s'affiche dans le journal. */
+function testerFiche() {
+  Logger.log(JSON.stringify(fiche_('Rosier Pierre de Ronsard', ''), null, 2));
 }
 
 // ── Utilitaires ─────────────────────────────────────────────────────

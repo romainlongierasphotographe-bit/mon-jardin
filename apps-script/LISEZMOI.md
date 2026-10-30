@@ -18,3 +18,16 @@ Ce script est séparé du script existant de l'appli, qui reste tel quel.
 7. Colle cette URL dans `index.html`, dans la ligne `const PHOTO_SCRIPT_URL = '';`.
 
 Si tu modifies le script plus tard : « Déployer » → « Gérer les déploiements » → crayon → Version : « Nouvelle version ». L'URL ne change pas.
+
+## Remplissage automatique des fiches
+
+Le même script remplit les fiches plantes à partir du nom de l'espèce, grâce à une IA.
+Il faut une clé d'accès, à ajouter dans le script (elle n'apparaît jamais dans l'appli) :
+
+- **Gemini (Google, offre gratuite)** : crée une clé sur https://aistudio.google.com/apikey
+- **ou Claude (Anthropic, payant à l'usage)** : crée une clé sur https://console.anthropic.com
+
+Dans l'éditeur Apps Script : roue dentée « Paramètres du projet » → « Propriétés du script » → « Ajouter une propriété » :
+- Propriété : `GEMINI_API_KEY` (ou `ANTHROPIC_API_KEY`), Valeur : ta clé.
+
+Ensuite, choisis la fonction `testerFiche` et clique sur « Exécuter » (Google redemande une autorisation pour les connexions externes : accepte). La fiche d'un rosier doit s'afficher dans le journal. Puis « Déployer » → « Gérer les déploiements » → crayon → « Nouvelle version » → « Déployer ».

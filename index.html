@@ -313,6 +313,11 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 1.2
   .sheet .dhero{border-radius:26px 26px 0 0}
   .dactions{border-radius:0 0 26px 26px}
 }
+/* FICHE AUTOMATIQUE */
+.gen-sum{display:none;background:rgba(74,140,74,.12);border:1px solid rgba(74,140,74,.35);border-radius:14px;padding:12px 14px;margin:-.25rem 0 1rem;font-size:13px;color:var(--cream2);line-height:1.5}
+.gen-sum.show{display:block}
+.gen-sum.warn{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.35)}
+.gen-sum b{color:var(--cream)}
 /* AJOUT PHOTO */
 .ph-prev{width:100%;max-height:280px;object-fit:contain;border-radius:var(--rs);background:var(--bg3);margin-bottom:1rem;display:block}
 .ph-check{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--cream2);margin-bottom:1rem;cursor:pointer}
@@ -509,8 +514,9 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 1.2
     <div class="fhdr"><span class="ftitle" id="addTitle">Ajouter une plante</span><button class="bx" id="btnCloseAdd">✕</button></div>
     <div class="pzone" id="pzone"><input type="file" id="pInput" accept="image/*"><img class="pprev" id="pprev" alt=""><div class="plabel" id="plabel">📷 Ajouter une photo</div></div>
     <div class="field"><label>Nom commun *</label><input id="fNom" placeholder="Dahlia, Rosier…"></div>
-    <button class="btn btn-ai" id="btnGen">✦ Générer la fiche automatiquement</button>
-    <p class="ai-hint">Entre le nom · clique Générer · corrige si besoin</p>
+    <button class="btn btn-ai" id="btnGen">✦ Remplir la fiche automatiquement</button>
+    <p class="ai-hint">Entre le nom précis de l'espèce ou de la variété · la fiche se remplit toute seule · corrige si besoin</p>
+    <div class="gen-sum" id="genSummary"></div>
     <div class="field"><label>Nom latin</label><input id="fLatin" placeholder="Dahlia pinnata"></div>
     <div class="field"><label>Massif(s) — séparer par virgule si plusieurs</label><input id="fMassifs" placeholder="Demi Lune, Le Central"></div>
     <div class="row2">
@@ -1162,6 +1168,7 @@ function editFromDetail(){
   document.getElementById('fNotes').value=p.notes||'';
   if(p.photo){const pr=document.getElementById('pprev');pr.src=p.photo;pr.style.display='block';document.getElementById('plabel').textContent='📷 Changer';}
   renderMultFields();
+  resetGen();
   document.getElementById('addOverlay').classList.add('open');
 }
 
@@ -1176,6 +1183,7 @@ function openAdd(){
   const pr=document.getElementById('pprev');pr.src='';pr.style.display='none';
   document.getElementById('plabel').textContent='📷 Ajouter une photo';
   renderMultFields();
+  resetGen();
   document.getElementById('addOverlay').classList.add('open');
 }
 
@@ -1224,25 +1232,89 @@ async function uploadFormPhoto(plantId,nom,fallback){
   return d.photo.url;
 }
 
-// ── AI GENERATE ───────────────────────────────────────────────────
-async function generateFiche(){
+// ── FICHE AUTOMATIQUE (IA via le script Google) ──────────────────
+let genData=null,genBusy=false,genFor='';
+function resetGen(){genData=null;genFor='';const s=document.getElementById('genSummary');s.className='gen-sum';s.innerHTML='';}
+function pick(v,allowed){v=String(v||'').trim();return allowed.find(a=>a.toLowerCase()===v.toLowerCase())||'';}
+function moisNom(v){v=String(v||'').trim().toLowerCase();return MOIS.find(m=>m.toLowerCase()===v)||MOIS.find(m=>m.toLowerCase().startsWith(v.slice(0,3))&&v.length>=3)||'';}
+function clean(v){return String(v??'').replace(/\|/g,'/').trim();}
+function monthNum(v){const n=parseInt(v);return n>=1&&n<=12?n:0;}
+
+// Convertit la réponse de l'IA au format des colonnes du Sheet
+function normalizeFiche(f){
+  const methods=['semis','bouturage','division','marcottage','greffe'];
+  const actTypes=['taille','plantation','engrais','arrosage','semis','bouturage','division','autre'];
+  const mult=(Array.isArray(f.multiplication)?f.multiplication:[]).map(m=>({
+    method:pick(m.methode,methods),periodStart:moisNom(m.debut),periodEnd:moisNom(m.fin),tip:clean(m.conseil)
+  })).filter(m=>m.method);
+  const actions=(Array.isArray(f.actions)?f.actions:[]).map(a=>({
+    type:pick(a.type,actTypes)||'autre',
+    mois:[...new Set((Array.isArray(a.mois)?a.mois:[]).map(monthNum).filter(Boolean))].map(n=>n-1),
+    tip:clean(a.conseil)
+  })).filter(a=>a.mois.length);
+  return{
+    trouve:f.trouve!==false,
+    nomCommun:clean(f.nomCommun),latin:clean(f.nomLatin),type:clean(f.type),croissance:clean(f.croissance),
+    longevite:clean(f.longevite),taille:clean(f.hauteur),etalement:clean(f.etalement),rusticite:clean(f.rusticite),
+    parfum:clean(f.parfum),expo:pick(f.exposition,['Plein soleil','Mi-ombre','Ombre']),
+    arrosage:pick(f.arrosage,['Faible','Modéré','Régulier','Abondant']),
+    floraison:clean(f.floraison),florDebut:monthNum(f.floraisonDebut),florFin:monthNum(f.floraisonFin),
+    couleur:clean(f.couleur),sol:clean(f.sol),
+    arrosageDetail:clean(f.arrosageDetail),solDetail:clean(f.solDetail),plantationDetail:clean(f.plantationDetail),
+    tailleDetail:clean(f.tailleDetail),engrais:clean(f.engrais),bonsavoir:clean(f.bonSavoir),toxique:clean(f.toxicite),
+    mult,actions
+  };
+}
+
+// Remplit les champs vides du formulaire ; le reste est gardé pour l'enregistrement
+function applyFiche(g){
+  const fill=(id,v)=>{const el=document.getElementById(id);if(v&&!el.value){el.value=v;return el.value===v;}return false;};
+  const filled=[];
+  if(fill('fLatin',g.latin))filled.push('nom latin');
+  if(fill('fExpo',g.expo))filled.push(g.expo.toLowerCase());
+  if(fill('fArro',g.arrosage))filled.push('arrosage '+g.arrosage.toLowerCase());
+  if(fill('fFlor',g.floraison))filled.push('floraison '+g.floraison);
+  if(fill('fCoul',g.couleur))filled.push('couleurs');
+  if(fill('fSol',g.sol))filled.push('sol');
+  if(fill('fTaille',g.taille))filled.push('hauteur');
+  if(!multEntries.length&&g.mult.length){multEntries=g.mult.map(m=>({...m}));renderMultFields();filled.push('multiplication');}
+  const extra=[g.type&&'type',g.rusticite&&'rusticité',(g.arrosageDetail||g.solDetail||g.plantationDetail||g.tailleDetail||g.engrais)&&'conseils d\'entretien',g.bonsavoir&&'astuces',g.toxique&&'toxicité'].filter(Boolean);
+  const s=document.getElementById('genSummary');
+  s.className='gen-sum show';
+  s.innerHTML=`<b>✦ Fiche remplie${g.latin?` · <i>${esc(g.latin)}</i>`:''}</b><br>
+    ${filled.length?`Champs ajoutés : ${esc(filled.join(', '))}.<br>`:''}
+    ${extra.length?`Ajoutés aussi dans la fiche : ${esc(extra.join(', '))}.<br>`:''}
+    ${g.actions.length?`${g.actions.length} tâche${g.actions.length>1?'s':''} d'entretien ajoutée${g.actions.length>1?'s':''} au calendrier « Ce mois-ci ».`:''}
+    <br><span style="color:var(--cream3)">Vérifie et corrige si besoin avant d'enregistrer.</span>`;
+}
+
+async function generateFiche(auto){
   const nom=document.getElementById('fNom').value.trim();
-  if(!nom){showToast('Entre le nom d\'abord');return;}
-  const btn=document.getElementById('btnGen');btn.disabled=true;btn.innerHTML='<span class="spin"></span> Génération…';
-  const n=nom.toLowerCase();
-  const p=plants.find(pl=>pl.nom.toLowerCase().includes(n)||n.includes(pl.nom.toLowerCase().split(' ')[0]));
-  if(p){
-    if(p.latin&&!document.getElementById('fLatin').value)document.getElementById('fLatin').value=p.latin;
-    if(p.expo&&!document.getElementById('fExpo').value)document.getElementById('fExpo').value=p.expo;
-    if(p.floraison&&!document.getElementById('fFlor').value)document.getElementById('fFlor').value=p.floraison;
-    if(p.couleur&&!document.getElementById('fCoul').value)document.getElementById('fCoul').value=p.couleur;
-    if(p.sol&&!document.getElementById('fSol').value)document.getElementById('fSol').value=p.sol;
-    if(p.arrosage&&!document.getElementById('fArro').value)document.getElementById('fArro').value=p.arrosage;
-    if(p.taille&&!document.getElementById('fTaille').value)document.getElementById('fTaille').value=p.taille;
-    if(!multEntries.length&&p.mult&&p.mult.length)multEntries=[...p.mult.map(m=>({...m}))];
-    renderMultFields();showToast('✦ Fiche générée depuis la base !');
-  }else{showToast('Plante non trouvée dans la base · remplis manuellement');}
-  btn.disabled=false;btn.innerHTML='✦ Générer la fiche automatiquement';
+  const latin=document.getElementById('fLatin').value.trim();
+  if(!nom&&!latin){if(!auto)showToast('Entre d\'abord le nom de la plante');return;}
+  const key=(nom+'|'+latin).toLowerCase();
+  if(genBusy||(auto&&genFor===key))return;
+  genBusy=true;genFor=key;
+  const btn=document.getElementById('btnGen');btn.disabled=true;btn.innerHTML='<span class="spin"></span> Recherche des infos…';
+  try{
+    if(!PHOTO_SCRIPT_URL)throw new Error('script non installé');
+    const d=await photoScriptCall({action:'fiche',nom,latin});
+    const g=normalizeFiche(d.fiche||{});
+    if(!g.trouve){
+      const s=document.getElementById('genSummary');s.className='gen-sum show warn';
+      s.innerHTML='<b>Espèce non reconnue avec certitude.</b><br>Précise le nom (variété, nom latin) puis relance.';
+    }else{genData=g;applyFiche(g);}
+  }catch(e){
+    // Repli : recopier une plante déjà présente dans le jardin
+    const n=nom.toLowerCase();
+    const p=n&&plants.find(pl=>pl.id!==editingId&&(pl.nom.toLowerCase().includes(n)||n.includes(pl.nom.toLowerCase().split(' ')[0])));
+    if(p&&!auto){
+      genData=normalizeFiche({});Object.assign(genData,{type:p.type,croissance:p.croissance,longevite:p.longevite,etalement:p.etalement,rusticite:p.rusticite,parfum:p.parfum,florDebut:p.florDebut,florFin:p.florFin,arrosageDetail:p.arrosageDetail,solDetail:p.solDetail,plantationDetail:p.plantationDetail,tailleDetail:p.tailleDetail,engrais:p.engrais,bonsavoir:p.bonsavoir,toxique:p.toxique,actions:p.actions,latin:p.latin,expo:p.expo,arrosage:p.arrosage,floraison:p.floraison,couleur:p.couleur,sol:p.sol,taille:p.taille,mult:p.mult||[]});
+      applyFiche(genData);showToast('Infos recopiées depuis « '+p.nom+' »');
+    }else if(!auto)showToast('Remplissage impossible : '+e.message);
+    genFor='';
+  }
+  btn.disabled=false;btn.innerHTML='✦ Remplir la fiche automatiquement';genBusy=false;
 }
 
 // ── SAVE ─────────────────────────────────────────────────────────
@@ -1251,6 +1323,8 @@ async function savePlant(){
   if(!nom){showToast('Le nom est obligatoire');return;}
   const btn=document.getElementById('btnSave');btn.innerHTML='<span class="spin"></span>';btn.disabled=true;
   const florDebut=parseInt(document.getElementById('fFlor').value.match(/\d+/)?.[0])||0;
+  const g=genData||normalizeFiche({});
+  const actStr=acts=>acts.map(a=>a.type+':'+a.mois.join('-')+':'+a.tip).join('|');
 
   if(editingId){
     // Modification : préserver toutes les colonnes botaniques existantes
@@ -1263,19 +1337,19 @@ async function savePlant(){
       document.getElementById('fMassifs').value,
       nom,
       document.getElementById('fLatin').value||p.latin,
-      p.type,p.croissance,p.longevite,p.etalement,p.rusticite,p.parfum,
+      p.type||g.type,p.croissance||g.croissance,p.longevite||g.longevite,p.etalement||g.etalement,p.rusticite||g.rusticite,p.parfum||g.parfum,
       document.getElementById('fExpo').value||p.expo,
       document.getElementById('fArro').value||p.arrosage,
       document.getElementById('fFlor').value||p.floraison,
-      florDebut||p.florDebut,
-      p.florFin,
+      p.florDebut||g.florDebut||florDebut,
+      p.florFin||g.florFin,
       document.getElementById('fCoul').value||p.couleur,
       document.getElementById('fSol').value||p.sol,
       document.getElementById('fTaille').value||p.taille,
-      p.arrosageDetail,p.solDetail,p.plantationDetail,p.tailleDetail,
-      p.engrais,p.bonsavoir,p.toxique,p.tags.join(';'),
+      p.arrosageDetail||g.arrosageDetail,p.solDetail||g.solDetail,p.plantationDetail||g.plantationDetail,p.tailleDetail||g.tailleDetail,
+      p.engrais||g.engrais,p.bonsavoir||g.bonsavoir,p.toxique||g.toxique,p.tags.join(';'),
       JSON.stringify(multEntries.length?multEntries:p.mult),
-      p.actions.map(a=>a.type+':'+a.mois.join('-')+':'+a.tip).join('|'),
+      actStr(p.actions.length?p.actions:g.actions),
       document.getElementById('fDp').value,
       document.getElementById('fDs').value,
       document.getElementById('fDt').value,
@@ -1288,19 +1362,20 @@ async function savePlant(){
       closeOverlay('addOverlay');showToast('Modifiée ✓');await syncNow();
     }catch(e){showToast('Erreur : '+e.message);}
   }else{
-    // Nouvelle plante : colonnes botaniques vides
+    // Nouvelle plante : colonnes botaniques issues du remplissage automatique (sinon vides)
     const newId=Date.now().toString(36);
     try{currentPhoto=await uploadFormPhoto(newId,nom,'');}
     catch(e){showToast('Photo non enregistrée : '+e.message);btn.innerHTML='Enregistrer';btn.disabled=false;return;}
     const row=[
       newId,
       document.getElementById('fMassifs').value,nom,
-      document.getElementById('fLatin').value,'','','','','','',
+      document.getElementById('fLatin').value,g.type,g.croissance,g.longevite,g.etalement,g.rusticite,g.parfum,
       document.getElementById('fExpo').value,document.getElementById('fArro').value,
-      document.getElementById('fFlor').value,florDebut,'',
+      document.getElementById('fFlor').value,g.florDebut||florDebut||'',g.florFin||'',
       document.getElementById('fCoul').value,document.getElementById('fSol').value,
-      document.getElementById('fTaille').value,'','','','','','','','',
-      JSON.stringify(multEntries),'',
+      document.getElementById('fTaille').value,g.arrosageDetail,g.solDetail,g.plantationDetail,g.tailleDetail,
+      g.engrais,g.bonsavoir,g.toxique,'',
+      JSON.stringify(multEntries),actStr(g.actions),
       document.getElementById('fDp').value,
       document.getElementById('fDs').value,
       document.getElementById('fDt').value,
@@ -1815,7 +1890,11 @@ document.getElementById('btnCloseAdd').addEventListener('click',()=>closeOverlay
 document.getElementById('btnCancel').addEventListener('click',()=>closeOverlay('addOverlay'));
 document.getElementById('btnSave').addEventListener('click',savePlant);
 document.getElementById('btnDel').addEventListener('click',deletePlant);
-document.getElementById('btnGen').addEventListener('click',generateFiche);
+document.getElementById('btnGen').addEventListener('click',()=>generateFiche(false));
+// Remplissage automatique dès que le nom est saisi (nouvelle plante)
+['fNom','fLatin'].forEach(id=>document.getElementById(id).addEventListener('change',()=>{
+  if(!editingId&&!genData&&document.getElementById('fNom').value.trim().length>=3)generateFiche(true);
+}));
 document.getElementById('btnCGrid').addEventListener('click',()=>{calMode='grid';document.getElementById('btnCGrid').classList.add('active');document.getElementById('btnCList').classList.remove('active');renderCal();});
 document.getElementById('btnCList').addEventListener('click',()=>{calMode='list';document.getElementById('btnCList').classList.add('active');document.getElementById('btnCGrid').classList.remove('active');renderCal();});
 document.getElementById('fMethod').addEventListener('change',renderCal);
