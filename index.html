@@ -1339,7 +1339,11 @@ async function generateFiche(auto){
     if(p&&!auto){
       genData=normalizeFiche({});Object.assign(genData,{type:p.type,croissance:p.croissance,longevite:p.longevite,etalement:p.etalement,rusticite:p.rusticite,parfum:p.parfum,florDebut:p.florDebut,florFin:p.florFin,arrosageDetail:p.arrosageDetail,solDetail:p.solDetail,plantationDetail:p.plantationDetail,tailleDetail:p.tailleDetail,engrais:p.engrais,bonsavoir:p.bonsavoir,toxique:p.toxique,actions:p.actions,latin:p.latin,expo:p.expo,arrosage:p.arrosage,floraison:p.floraison,couleur:p.couleur,sol:p.sol,taille:p.taille,mult:p.mult||[]});
       applyFiche(genData);showToast('Infos recopiées depuis « '+p.nom+' »');
-    }else if(!auto)showToast('Remplissage impossible : '+e.message);
+    }else{
+      // Toujours afficher l'erreur (même lancée automatiquement), sinon on croit que rien ne se passe
+      const s=document.getElementById('genSummary');s.className='gen-sum show warn';
+      s.innerHTML=`<b>Remplissage impossible</b><br>${esc(e.message)}<br><span style="color:var(--cream3)">Réessaie avec le bouton ci-dessus. Si le message persiste, envoie-le-moi.</span>`;
+    }
     genFor='';
   }
   btn.disabled=false;btn.innerHTML='✦ Remplir la fiche automatiquement';genBusy=false;
