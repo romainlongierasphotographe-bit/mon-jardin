@@ -153,7 +153,7 @@ function fiche_(nom, latin) {
 
   const prompt = fichePrompt_(nom, latin);
   const text = gemini
-    ? callGemini_(gemini, props.getProperty('GEMINI_MODEL') || 'gemini-flash-latest', prompt)
+    ? callGeminiAvecSecours_(gemini, props.getProperty('GEMINI_MODEL'), prompt)
     : callClaude_(claude, props.getProperty('CLAUDE_MODEL') || 'claude-haiku-5-5', prompt);
 
   const json = String(text).replace(/^[\s\S]*?(\{)/, '$1').replace(/\}[^}]*$/, '}');
@@ -198,6 +198,26 @@ Réponds UNIQUEMENT avec un objet JSON valide, sans texte autour, avec exactemen
 "actions" est le calendrier d'entretien de l'année (3 à 6 tâches : taille, plantation, engrais, paillage, protection hivernale…). Tous les textes en français, concis.`;
 }
 
+// Gemini est parfois saturé (« high demand ») : on réessaie, puis on passe à un autre modèle.
+const GEMINI_SECOURS = ['gemini-flash-latest', 'gemini-flash-lite-latest', 'gemini-3.5-flash-lite', 'gemini-2.5-flash'];
+
+function callGeminiAvecSecours_(key, modelChoisi, prompt) {
+  const models = [...new Set([modelChoisi, ...GEMINI_SECOURS].filter(Boolean))];
+  let derniere;
+  for (const model of models) {
+    for (let essai = 0; essai < 2; essai++) {
+      try { return callGemini_(key, model, prompt); }
+      catch (e) {
+        derniere = e;
+        if (!e.temporaire && !e.modeleIndispo) throw e;   // ex. clé invalide : inutile d'insister
+        if (e.modeleIndispo) break;                         // modèle inconnu : modèle suivant
+        Utilities.sleep(1500 * (essai + 1));
+      }
+    }
+  }
+  throw new Error('Gemini est saturé pour le moment, réessaie dans quelques minutes (' + derniere.message + ')');
+}
+
 function callGemini_(key, model, prompt) {
   const res = UrlFetchApp.fetch('https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent', {
     method: 'post', contentType: 'application/json', muteHttpExceptions: true,
@@ -207,8 +227,15 @@ function callGemini_(key, model, prompt) {
       generationConfig: { responseMimeType: 'application/json', temperature: 0.2 }
     })
   });
-  const d = JSON.parse(res.getContentText() || '{}');
-  if (res.getResponseCode() !== 200) throw new Error('Gemini : ' + ((d.error && d.error.message) || ('erreur ' + res.getResponseCode())));
+  let d = {};
+  try { d = JSON.parse(res.getContentText() || '{}'); } catch (e) {}
+  const code = res.getResponseCode();
+  if (code !== 200) {
+    const err = new Error('Gemini (' + model + ') : ' + ((d.error && d.error.message) || ('erreur ' + code)));
+    err.temporaire = code === 429 || code >= 500;
+    err.modeleIndispo = code === 404;
+    throw err;
+  }
   const parts = (((d.candidates || [])[0] || {}).content || {}).parts || [];
   const text = parts.map(x => x.text || '').join('');
   if (!text) throw new Error('Gemini : réponse vide');
