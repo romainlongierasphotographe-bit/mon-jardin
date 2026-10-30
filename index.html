@@ -220,6 +220,99 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 1.2
 .lb-cap b{color:var(--cream);font-weight:600}
 .dhero-cam{position:absolute;top:12px;right:52px;height:32px;padding:0 12px;border-radius:99px;background:rgba(0,0,0,.5);border:none;color:#fff;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;z-index:2}
 .dhero-cam:hover{background:rgba(0,0,0,.7)}
+/* FICHE PLANTE (plein écran sur mobile, carte centrée sur ordinateur) */
+#detOverlay{padding:0;background:rgba(0,0,0,.6)}
+#detOverlay.open{display:block}
+.sheet{position:relative;width:100%;max-width:680px;min-height:100%;margin:0 auto;background:var(--bg);animation:sheetUp .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes sheetUp{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+.sheet .dhero{height:min(58vh,460px);overflow:hidden}
+.sheet .dhero-ph{font-size:96px;background:radial-gradient(circle at 50% 40%,rgba(122,184,122,.25),transparent 60%)}
+.sheet .dhero-ov{background:linear-gradient(to top,var(--bg) 0%,rgba(15,26,15,.55) 38%,rgba(15,26,15,0) 62%),linear-gradient(to bottom,rgba(0,0,0,.35),transparent 22%)}
+.dhero-top{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:8px;padding:14px 16px;padding-top:max(14px,env(safe-area-inset-top));z-index:3}
+.ibtn{height:40px;min-width:40px;padding:0 14px;border-radius:99px;background:rgba(10,15,10,.45);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.16);color:#fff;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.ibtn:hover{background:rgba(10,15,10,.65)}
+#btnDetClose{font-size:20px;padding:0}
+.sheet .dhero-body{padding:0 20px 18px}
+.sheet .dname{font-family:'DM Sans',sans-serif;font-weight:700;font-size:34px;letter-spacing:-.025em;line-height:1.05;margin:8px 0 4px;text-shadow:0 2px 16px rgba(0,0,0,.4)}
+.sheet .dlatin{font-size:15px;color:rgba(255,255,255,.65);margin-bottom:0}
+.sheet .dtags{gap:6px}
+.hchip{font-size:12px;font-weight:600;padding:5px 11px;border-radius:99px;background:rgba(255,255,255,.14);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff;border:1px solid rgba(255,255,255,.18)}
+.hchip.pink{background:rgba(217,96,143,.35);border-color:rgba(240,166,196,.45)}
+.dtabs{position:sticky;top:0;z-index:6;display:flex;gap:6px;padding:10px 16px;background:rgba(15,26,15,.88);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
+.dtabs::-webkit-scrollbar{display:none}
+.dtab{flex-shrink:0;padding:8px 15px;border-radius:99px;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;color:var(--cream3);background:transparent;border:1px solid var(--border2);cursor:pointer;transition:all .15s}
+.dtab.active{background:var(--cream);color:var(--bg);border-color:var(--cream)}
+.sheet .dbody{padding:22px 16px 8px}
+.dsec2{margin-bottom:30px;scroll-margin-top:64px}
+.dh{font-size:19px;font-weight:700;letter-spacing:-.01em;color:var(--cream);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.dh small{margin-left:auto;font-size:12px;font-weight:500;color:var(--cream3)}
+.facts{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+@media(min-width:560px){.facts{grid-template-columns:repeat(3,1fr)}}
+.fact{display:flex;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:10px 12px;min-width:0}
+.fact-ic{width:36px;height:36px;border-radius:11px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.fact-t{min-width:0}
+.fact-l{font-size:10.5px;color:var(--cream3);text-transform:uppercase;letter-spacing:.06em}
+.fact-v{font-size:14px;font-weight:600;color:var(--cream);margin-top:1px;line-height:1.25;overflow-wrap:anywhere}
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:14px 16px;margin-bottom:12px}
+.panel-h{font-size:14px;font-weight:600;color:var(--cream);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.panel-h small{margin-left:auto;font-weight:500;font-size:12px;color:var(--cream3)}
+.fcal{display:grid;grid-template-columns:repeat(12,1fr);gap:4px}
+.fcal i{display:block;height:30px;border-radius:8px;background:rgba(255,255,255,.06)}
+.fcal .on i{background:linear-gradient(180deg,#f0a6c4,#d9608f);box-shadow:0 2px 10px rgba(217,96,143,.3)}
+.fcal span{display:block;text-align:center;font-size:10px;color:var(--cream3);margin-top:5px}
+.fcal .now span{color:var(--greenl);font-weight:700}
+.fcal .now i{outline:2px solid var(--greenl);outline-offset:1px}
+.gauge{display:grid;grid-template-columns:120px 1fr 62px;align-items:center;gap:10px;padding:7px 0}
+.gauge-l{font-size:14px;color:var(--cream2);display:flex;align-items:center;gap:8px}
+.gauge-segs{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.gauge-segs i{height:8px;border-radius:99px;background:rgba(255,255,255,.08)}
+.gauge-v{font-size:12px;color:var(--cream3);text-align:right}
+.quote{font-size:15px;line-height:1.6;color:var(--cream2);white-space:pre-line}
+.dchips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.dchips:last-child{margin-bottom:0}
+.dchip{font-size:13px;padding:6px 12px;border-radius:99px;background:var(--bg3);border:1px solid var(--border2);color:var(--cream2)}
+.dchip-l{font-size:12px;color:var(--cream3);margin-bottom:6px}
+.care{display:grid;gap:10px;margin-bottom:12px}
+@media(min-width:560px){.care{grid-template-columns:1fr 1fr}}
+.ccard{background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:14px 16px}
+.ccard-h{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px;color:var(--cream);margin-bottom:6px}
+.ccard-ic{width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.dlist{list-style:none}
+.dlist li{font-size:14px;color:var(--cream2);line-height:1.5;padding:4px 0 4px 16px;position:relative}
+.dlist li::before{content:'';position:absolute;left:2px;top:12px;width:6px;height:6px;border-radius:50%;background:var(--dot,var(--greenl))}
+.ccard.tip{background:rgba(74,140,74,.1);border-color:rgba(74,140,74,.3)}
+.ccard.warn{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.3)}
+.mgrid{display:grid;gap:8px}
+.mcard{display:flex;gap:12px;align-items:flex-start;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:12px 14px}
+.mcard .mperiod{font-size:14px}
+.mal{background:var(--bg2);border:1px solid var(--border);border-radius:16px;margin-bottom:8px;overflow:hidden}
+.mal summary{list-style:none;cursor:pointer;padding:13px 16px;display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px;color:var(--cream)}
+.mal summary::-webkit-details-marker{display:none}
+.mal summary::after{content:'›';margin-left:auto;color:var(--cream3);font-size:20px;transition:transform .2s}
+.mal[open] summary::after{transform:rotate(90deg)}
+.mal-b{padding:0 16px 14px;font-size:14px;line-height:1.55}
+.mal-b p{color:var(--cream2);margin-bottom:6px}
+.mal-b p.trt{color:#6ee7b7}
+.tl-it{display:flex;gap:12px;padding-bottom:16px;position:relative}
+.tl-it:not(:last-child)::before{content:'';position:absolute;left:18px;top:40px;bottom:2px;width:2px;background:var(--border2)}
+.tl-dot{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:17px}
+.tl-body{flex:1;min-width:0;padding-top:2px}
+.tl-top{display:flex;align-items:baseline;gap:8px}
+.tl-top b{font-size:15px;color:var(--cream);text-transform:capitalize}
+.tl-top span{margin-left:auto;font-size:12px;color:var(--cream3);white-space:nowrap}
+.tl-note{font-size:14px;color:var(--cream2);line-height:1.5;margin-top:2px}
+.dempty{font-size:14px;color:var(--cream3);background:var(--bg2);border:1px dashed var(--border2);border-radius:16px;padding:16px;text-align:center}
+.linkbtn{background:none;border:none;color:var(--greenl);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;padding:6px 0}
+.dactions{position:sticky;bottom:0;z-index:6;display:flex;gap:8px;padding:12px 16px;padding-bottom:max(12px,env(safe-area-inset-bottom));background:rgba(15,26,15,.9);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-top:1px solid var(--border)}
+.dactions .btn{flex:1;justify-content:center;padding:12px 6px;border-radius:14px;font-size:13.5px;white-space:nowrap;gap:5px;min-width:0}
+.sheet .gitem,.sheet .gallery-thumb,.sheet .gallery-add{width:124px}
+.sheet .gallery-thumb,.sheet .gallery-add{height:124px;border-radius:16px}
+@media(min-width:720px){
+  #detOverlay{padding:28px 16px}
+  .sheet{min-height:0;border-radius:26px;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+  .sheet .dhero{border-radius:26px 26px 0 0}
+  .dactions{border-radius:0 0 26px 26px}
+}
 /* AJOUT PHOTO */
 .ph-prev{width:100%;max-height:280px;object-fit:contain;border-radius:var(--rs);background:var(--bg3);margin-bottom:1rem;display:block}
 .ph-check{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--cream2);margin-bottom:1rem;cursor:pointer}
@@ -385,22 +478,27 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 1.2
 
 <!-- Detail overlay -->
 <div class="overlay" id="detOverlay">
-  <div class="modal">
+  <div class="sheet" id="detSheet">
     <div class="dhero" id="dhero">
       <div class="dhero-ph" id="dheroPh">🌱</div>
       <div class="dhero-ov"></div>
-      <button class="dhero-cam" id="btnHeroCam" title="Changer la photo de profil">📷 Photo de profil</button>
-      <button class="dhero-close" id="btnDetClose">✕</button>
+      <div class="dhero-top">
+        <button class="ibtn" id="btnDetClose" aria-label="Fermer">←</button>
+        <span style="flex:1"></span>
+        <button class="ibtn" id="btnHeroCam" title="Changer la photo de profil">📷 Profil</button>
+      </div>
       <div class="dhero-body">
+        <div class="dtags" id="dtags"></div>
         <div class="dname" id="dname"></div>
         <div class="dlatin" id="dlatin"></div>
-        <div class="dtags" id="dtags"></div>
       </div>
     </div>
+    <nav class="dtabs" id="dtabs"></nav>
     <div class="dbody" id="dbody"></div>
-    <div class="factions" style="padding:1rem 1.25rem;margin-top:0;border-top:1px solid var(--border)">
-      <button class="btn btn-o" id="btnEdit">✎ Modifier</button>
-      <button class="btn btn-g" id="btnCloseDet">Fermer</button>
+    <div class="dactions">
+      <button class="btn btn-o" id="btnDetIntervention">＋ Suivi</button>
+      <button class="btn btn-o" id="btnDetPhoto">📷 Photo</button>
+      <button class="btn btn-g" id="btnEdit">✎ Modifier</button>
     </div>
   </div>
 </div>
@@ -910,119 +1008,137 @@ function aroPct(a){return{Faible:25,Modéré:50,Régulier:75,Abondant:100}[a]||5
 function solPct(e){if(!e)return 50;if(e.includes('Plein'))return 100;if(e.includes('ombre'))return 30;return 60;}
 function toList(str){if(!str)return'';return str.split(/[.;]/).map(s=>s.trim()).filter(Boolean).map(s=>`<li>${s}</li>`).join('');}
 
+// ── FICHE PLANTE ─────────────────────────────────────────────────
+function bullets(str,dot){
+  const items=String(str||'').split(/;|\.(?=\s|$)/).map(s=>s.trim()).filter(Boolean);
+  return items.length?`<ul class="dlist" ${dot?`style="--dot:${dot}"`:''}>${items.map(s=>`<li>${esc(s)}</li>`).join('')}</ul>`:'';
+}
+function gauge(icon,label,pct,val,color){
+  const n=Math.max(1,Math.min(4,Math.round(pct/25)));
+  return `<div class="gauge"><div class="gauge-l"><span>${icon}</span>${label}</div>
+    <div class="gauge-segs">${[1,2,3,4].map(i=>`<i ${i<=n?`style="background:${color}"`:''}></i>`).join('')}</div>
+    <div class="gauge-v">${esc(val)}</div></div>`;
+}
+function florMonths(p){
+  const d=p.florDebut,f=p.florFin;
+  if(!(d>=1&&d<=12))return[];
+  if(!(f>=1&&f<=12))return[d];
+  const r=[];let m=d;
+  for(let k=0;k<12;k++){r.push(m);if(m===f)break;m=m%12+1;}
+  return r;
+}
+function multOf(p){
+  return p.mult&&p.mult.length?p.mult:p.actions.filter(a=>['semis','bouturage','division','marcottage','greffe'].includes(a.type)).map(a=>({method:a.type,periodStart:a.mois[0]!==undefined?MOIS[a.mois[0]]:'',periodEnd:a.mois.length>1?MOIS[a.mois[a.mois.length-1]]:'',tip:a.tip}));
+}
+
 async function openDetail(id){
   const p=plants.find(x=>x.id===id);if(!p)return;
+  const ov=document.getElementById('detOverlay');
+  const keepScroll=ov.classList.contains('open')&&viewingId===id?ov.scrollTop:0;
   viewingId=id;
 
-  // Hero
-  const imgSrc=p.photo||(await fetchImg(p.nom,p.latin));
-  const hw=document.getElementById('dhero');
-  const ph=document.getElementById('dheroPh');
-  if(imgSrc){
-    let img=hw.querySelector('img');
-    if(!img){img=document.createElement('img');hw.insertBefore(img,hw.querySelector('.dhero-ov'));}
-    img.src=imgSrc;img.alt=p.nom;
-    img.onerror=()=>{img.style.display='none';ph.style.display='flex';};
-    ph.style.display='none';
-  }else{ph.style.display='flex';ph.textContent=getIcon(p.nom);}
-
+  // En-tête : photo de profil (ou image Wikipédia)
+  const hw=document.getElementById('dhero'),ph=document.getElementById('dheroPh');
+  let img=hw.querySelector('img');
+  if(!img){img=document.createElement('img');hw.insertBefore(img,hw.querySelector('.dhero-ov'));}
+  const showPh=()=>{img.style.display='none';ph.style.display='flex';ph.textContent=getIcon(p.nom);};
+  img.onerror=showPh;
+  if(p.photo){img.src=p.photo;img.alt=p.nom;img.style.display='';ph.style.display='none';}
+  else{
+    showPh();
+    fetchImg(p.nom,p.latin).then(src=>{if(src&&viewingId===id&&!p.photo){img.src=src;img.alt=p.nom;img.style.display='';ph.style.display='none';}});
+  }
   document.getElementById('dname').textContent=p.nom;
   document.getElementById('dlatin').textContent=p.latin;
+  const flor=florLabel(p);
   document.getElementById('dtags').innerHTML=[
-    p.type?`<span class="dtag dtag-blue">${p.type}</span>`:'',
-    p.rusticite?`<span class="dtag dtag-green">${p.rusticite}</span>`:'',
-    p.expo?`<span class="dtag dtag-orange">${p.expo}</span>`:'',
-    p.floraison?`<span class="dtag dtag-green">🌸 ${p.floraison}</span>`:'',
-    p.parfum&&p.parfum!=='Non'?`<span class="dtag dtag-purple">Parfumé</span>`:''
-  ].filter(Boolean).join('');
+    ...p.massifs.map(m=>`<span class="hchip">📍 ${esc(m)}</span>`),
+    flor?`<span class="hchip pink">🌸 ${esc(flor)}</span>`:'',
+    p.type?`<span class="hchip">${esc(p.type)}</span>`:''
+  ].join('');
 
-  const mult=p.mult&&p.mult.length?p.mult:p.actions.filter(a=>['semis','bouturage','division','marcottage','greffe'].includes(a.type)).map(a=>({method:a.type,periodStart:a.mois[0]!==undefined?MOIS[a.mois[0]]:'',periodEnd:a.mois.length>1?MOIS[a.mois[a.mois.length-1]]:'',tip:a.tip}));
+  // ── Aperçu
+  const facts=[
+    ['☀️','Exposition',p.expo],['💧','Arrosage',p.arrosage],['❄️','Rusticité',p.rusticite],
+    ['📏','Hauteur',p.taille],['↔️','Étalement',p.etalement],['🌱','Croissance',p.croissance],
+    ['⏳','Longévité',p.longevite],['🎨','Couleurs',p.couleur],['🌬️','Parfum',p.parfum],['🪨','Sol',p.sol]
+  ].filter(f=>f[2]);
+  const months=florMonths(p),now=new Date().getMonth()+1;
+  const rust=p.rusticite||'';
+  const rustPct=rust.includes('Très')?100:rust.includes('Sensible')?25:rust?70:50;
+  let apercu=facts.length?`<div class="facts">${facts.map(([ic,l,v])=>`<div class="fact"><div class="fact-ic">${ic}</div><div class="fact-t"><div class="fact-l">${l}</div><div class="fact-v">${esc(v)}</div></div></div>`).join('')}</div>`:'';
+  if(months.length||p.floraison){
+    apercu+=`<div class="panel"><div class="panel-h">🌸 Floraison<small>${esc(p.floraison||flor)}</small></div>
+      ${months.length?`<div class="fcal">${MOIS_SHORT.map((m,i)=>`<div class="${months.includes(i+1)?'on':''} ${i+1===now?'now':''}"><i></i><span>${m.charAt(0)}</span></div>`).join('')}</div>`:''}
+    </div>`;
+  }
+  apercu+=`<div class="panel"><div class="panel-h">🧭 Besoins</div>
+    ${gauge('💧','Arrosage',aroPct(p.arrosage),p.arrosage||'—','#60a5fa')}
+    ${gauge('☀️','Soleil',solPct(p.expo),p.expo||'—','#fbbf24')}
+    ${gauge('🌿','Engrais',p.engrais?65:30,p.engrais?'Moyen':'Faible','#34d399')}
+    ${gauge('❄️','Rusticité',rustPct,rust.includes('Très')?'Élevée':rust.includes('Sensible')?'Faible':'Bonne','#a78bfa')}
+  </div>`;
+  if(p.notes)apercu+=`<div class="panel"><div class="panel-h">📝 Mes notes</div><div class="quote">${esc(p.notes)}</div></div>`;
+  const dateRows=[['🪴 Plantation',p.datesPlantation],['🌱 Semis',p.datesSemis],['✂️ Taille',p.datesTaille]].filter(d=>d[1]);
+  if(dateRows.length)apercu+=`<div class="panel"><div class="panel-h">📅 Mes dates</div>${dateRows.map(([l,v])=>`<div class="dchip-l">${l}</div><div class="dchips">${v.split(',').map(d=>d.trim()).filter(Boolean).map(d=>`<span class="dchip">${esc(d)}</span>`).join('')}</div>`).join('')}</div>`;
 
-  document.getElementById('dbody').innerHTML=`
-    ${p.type?`
-    <div class="dsec">
-      <div class="dsec-title">Caractéristiques générales</div>
-      <div class="dgrid2">
-        <div class="dcard">
-          <div class="dcard-title">📏 Dimensions</div>
-          ${p.taille?`<div class="drow"><span class="drow-l">Hauteur</span><span class="drow-v">${p.taille}</span></div>`:''}
-          ${p.etalement?`<div class="drow"><span class="drow-l">Étalement</span><span class="drow-v">${p.etalement}</span></div>`:''}
-          ${p.croissance?`<div class="drow"><span class="drow-l">Croissance</span><span class="drow-v">${p.croissance}</span></div>`:''}
-          ${p.longevite?`<div class="drow"><span class="drow-l">Longévité</span><span class="drow-v">${p.longevite}</span></div>`:''}
-        </div>
-        <div class="dcard">
-          <div class="dcard-title">🌸 Floraison</div>
-          ${p.floraison?`<div class="drow"><span class="drow-l">Période</span><span class="drow-v">${p.floraison}</span></div>`:''}
-          ${p.couleur?`<div class="drow"><span class="drow-l">Couleurs</span><span class="drow-v">${p.couleur}</span></div>`:''}
-          ${p.parfum?`<div class="drow"><span class="drow-l">Parfum</span><span class="drow-v">${p.parfum}</span></div>`:''}
-          ${p.rusticite?`<div class="drow"><span class="drow-l">Rusticité</span><span class="drow-v">${p.rusticite}</span></div>`:''}
-        </div>
-      </div>
-    </div>`:''}
+  // ── Entretien
+  const care=[
+    ['💧','Arrosage',p.arrosageDetail,'rgba(59,130,246,.18)','#60a5fa'],
+    ['☀️','Exposition & sol',p.solDetail,'rgba(245,158,11,.18)','#fbbf24'],
+    ['🪴','Plantation',p.plantationDetail,'rgba(139,92,246,.18)','#a78bfa'],
+    ['✂️','Taille',p.tailleDetail,'rgba(239,68,68,.18)','#f87171'],
+    ['🌿','Engrais',p.engrais,'rgba(16,185,129,.18)','#34d399']
+  ].filter(c=>c[2]);
+  const mult=multOf(p);
+  const maladies=MALADIES_DB[p.nom]||[];
+  let entretien='';
+  if(care.length)entretien+=`<div class="care">${care.map(([ic,l,txt,bg,dot])=>`<div class="ccard"><div class="ccard-h"><span class="ccard-ic" style="background:${bg}">${ic}</span>${l}</div>${bullets(txt,dot)}</div>`).join('')}</div>`;
+  if(p.bonsavoir||p.toxique)entretien+=`<div class="care">
+    ${p.bonsavoir?`<div class="ccard tip"><div class="ccard-h"><span class="ccard-ic" style="background:rgba(74,140,74,.25)">💡</span>Bon à savoir</div>${bullets(p.bonsavoir)}</div>`:''}
+    ${p.toxique?`<div class="ccard warn"><div class="ccard-h"><span class="ccard-ic" style="background:rgba(239,68,68,.2)">⚠️</span>Attention</div>${bullets(p.toxique,'#f87171')}</div>`:''}
+  </div>`;
+  if(mult.length)entretien+=`<div class="panel-h" style="margin-top:6px">🌱 Multiplication</div><div class="mgrid" style="margin-bottom:12px">${mult.map(m=>`<div class="mcard">
+      <span class="multbadge" style="background:${MCOLS[m.method]||'rgba(255,255,255,.1)'};color:${MTXT[m.method]||'#fff'}">${MICONS[m.method]||'🌱'} ${esc(m.method)}</span>
+      <div><div class="mperiod">📅 ${esc(m.periodStart||'')}${m.periodEnd&&m.periodEnd!==m.periodStart?' – '+esc(m.periodEnd):''}</div>${m.tip?`<div class="mtip">${esc(m.tip)}</div>`:''}</div>
+    </div>`).join('')}</div>`;
+  if(maladies.length)entretien+=`<div class="panel-h" style="margin-top:6px">🐛 Maladies & ravageurs</div>${maladies.map(m=>`<details class="mal"><summary>${esc(m.nom)}</summary>
+      <div class="mal-b"><p>⚠️ ${esc(m.symptomes)}</p><p class="trt">💊 ${esc(m.traitement)}</p></div></details>`).join('')}`;
 
-    ${p.datesPlantation||p.datesSemis||p.datesTaille?`
-    <div class="dsec">
-      <div class="dsec-title">Mes dates</div>
-      ${p.datesPlantation?`<div style="margin-bottom:10px"><div style="font-size:10px;color:var(--cream3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">🪴 Plantation</div><div class="dbadges">${p.datesPlantation.split(',').map(d=>`<span class="dbadge">${d.trim()}</span>`).join('')}</div></div>`:''}
-      ${p.datesSemis?`<div style="margin-bottom:10px"><div style="font-size:10px;color:var(--cream3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">🌱 Semis</div><div class="dbadges">${p.datesSemis.split(',').map(d=>`<span class="dbadge">${d.trim()}</span>`).join('')}</div></div>`:''}
-      ${p.datesTaille?`<div style="margin-bottom:10px"><div style="font-size:10px;color:var(--cream3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">✂️ Taille(s)</div><div class="dbadges">${p.datesTaille.split(',').map(d=>`<span class="dbadge">${d.trim()}</span>`).join('')}</div></div>`:''}
-    </div>`:''}
+  // ── Suivi (interventions)
+  const histo=histoData.filter(h=>h.plantId===id);
+  const suivi=histo.length?`<div class="tl">${histo.slice(0,6).map(h=>{const t=HISTO_TYPES[h.type]||HISTO_TYPES.autre;return`<div class="tl-it">
+      <div class="tl-dot" style="background:${t.color}">${t.icon}</div>
+      <div class="tl-body"><div class="tl-top"><b>${esc(h.type)}</b><span>${h.date?esc(fmtDate(h.date)):''}</span></div>${h.note?`<div class="tl-note">${esc(h.note)}</div>`:''}</div>
+    </div>`;}).join('')}</div>${histo.length>6?`<button class="linkbtn" onclick="closeOverlay('detOverlay');showNav('historique')">Voir tout l'historique (${histo.length}) →</button>`:''}`
+    :`<div class="dempty">Aucune intervention enregistrée pour cette plante.</div>`;
 
-    ${p.notes?`
-    <div class="dsec">
-      <div class="dsec-title">Notes personnelles</div>
-      <div class="notes-box">${p.notes}</div>
-    </div>`:''}
+  const sections=[
+    {id:'ds-apercu',tab:'Aperçu',html:`<h3 class="dh">Aperçu</h3>${apercu}`},
+    {id:'dGallery',tab:'Photos',html:renderGallery(p)},
+    entretien?{id:'ds-entretien',tab:'Entretien',html:`<h3 class="dh">Entretien</h3>${entretien}`}:null,
+    {id:'ds-suivi',tab:'Suivi',html:`<h3 class="dh">Suivi<small>${histo.length} intervention${histo.length>1?'s':''}</small></h3>${suivi}`}
+  ].filter(Boolean);
+  document.getElementById('dbody').innerHTML=sections.map(s=>`<section class="dsec2" id="${s.id}">${s.html}</section>`).join('');
+  document.getElementById('dtabs').innerHTML=sections.map((s,i)=>`<button class="dtab ${i===0?'active':''}" data-sec="${s.id}">${s.tab}</button>`).join('');
+  document.getElementById('dGallery').addEventListener('click',handlePhotoStripClick);
 
-    <div class="dsec">
-      <div class="dsec-title">Besoins culturaux</div>
-      <div class="dcard">
-        ${bar('Arrosage',aroPct(p.arrosage),'#3b82f6',p.arrosage||'—')}
-        ${bar('Soleil',solPct(p.expo),'#f59e0b',p.expo||'—')}
-        ${bar('Fertilisation',p.engrais?65:30,'#10b981',p.engrais?'Moyen':'Faible')}
-        ${bar('Rusticité',p.rusticite&&p.rusticite.includes('Très')?90:p.rusticite&&p.rusticite.includes('Sensible')?20:65,'#8b5cf6',p.rusticite&&p.rusticite.includes('Très')?'Élevée':p.rusticite&&p.rusticite.includes('Sensible')?'Faible':'Bonne')}
-      </div>
-    </div>
+  ov.classList.add('open');
+  document.body.style.overflow='hidden';
+  ov.scrollTop=keepScroll;
+  updateDetailTabs();
+}
 
-    ${p.arrosageDetail||p.solDetail?`
-    <div class="dsec">
-      <div class="dsec-title">Besoins détaillés</div>
-      <div class="dgrid2">
-        ${p.arrosageDetail?`<div class="icard blue"><div class="icard-title">💧 Arrosage</div><ul>${toList(p.arrosageDetail)}</ul></div>`:''}
-        ${p.solDetail?`<div class="icard green"><div class="icard-title">☀️ Exposition & Sol</div><ul>${toList(p.solDetail)}</ul></div>`:''}
-      </div>
-    </div>`:''}
-
-    ${p.plantationDetail||p.tailleDetail||p.engrais?`
-    <div class="dsec">
-      <div class="dsec-title">Plantation & Entretien</div>
-      <div class="dgrid3">
-        ${p.plantationDetail?`<div class="dcard"><div class="dcard-title">🪴 Plantation</div><ul class="icard" style="background:none;border:none;padding:0">${toList(p.plantationDetail)}</ul></div>`:''}
-        ${p.tailleDetail?`<div class="dcard"><div class="dcard-title">✂️ Taille</div><ul class="icard" style="background:none;border:none;padding:0">${toList(p.tailleDetail)}</ul></div>`:''}
-        ${p.engrais?`<div class="dcard"><div class="dcard-title">🌿 Engrais</div><ul class="icard" style="background:none;border:none;padding:0">${toList(p.engrais)}</ul></div>`:''}
-      </div>
-    </div>`:''}
-
-    ${p.bonsavoir?`
-    <div class="dsec">
-      <div class="dsec-title">Bon à savoir</div>
-      <div class="icard green" style="margin-bottom:${p.toxique?'8px':'0'}"><div class="icard-title">💡 Astuce</div><ul>${toList(p.bonsavoir)}</ul></div>
-      ${p.toxique?`<div class="icard red" style="margin-top:8px"><div class="icard-title">⚠️ Attention</div><ul><li>${p.toxique}</li></ul></div>`:''}
-    </div>`:''}
-
-    ${mult.length?`
-    <div class="dsec">
-      <div class="dsec-title">Multiplication</div>
-      ${mult.map(m=>`<div class="multrow">
-        <span class="multbadge" style="background:${MCOLS[m.method]||'rgba(255,255,255,.1)'};color:${MTXT[m.method]||'#fff'}">${MICONS[m.method]||'🌱'} ${m.method}</span>
-        <div>
-          <div class="mperiod">📅 ${m.periodStart||''}${m.periodEnd&&m.periodEnd!==m.periodStart?' – '+m.periodEnd:''}</div>
-          ${m.tip?`<div class="mtip">${m.tip}</div>`:''}
-        </div>
-      </div>`).join('')}
-    </div>`:''}
-  `;
-  document.getElementById('detOverlay').classList.add('open');
+// Onglet actif selon la section visible
+function updateDetailTabs(){
+  const ov=document.getElementById('detOverlay');
+  const tabs=document.getElementById('dtabs');
+  const limit=tabs.getBoundingClientRect().bottom+12;
+  let cur=null;
+  document.querySelectorAll('#dbody .dsec2').forEach(s=>{if(s.getBoundingClientRect().top<=limit)cur=s.id;});
+  if(ov.scrollTop+ov.clientHeight>=ov.scrollHeight-4){const all=document.querySelectorAll('#dbody .dsec2');if(all.length)cur=all[all.length-1].id;}
+  if(!cur){const f=document.querySelector('#dbody .dsec2');cur=f&&f.id;}
+  tabs.querySelectorAll('.dtab').forEach(b=>b.classList.toggle('active',b.dataset.sec===cur));
 }
 
 function editFromDetail(){
@@ -1311,7 +1427,10 @@ function renderMois(){
 }
 
 // ── UTILS ─────────────────────────────────────────────────────────
-function closeOverlay(id){document.getElementById(id).classList.remove('open');}
+function closeOverlay(id){
+  document.getElementById(id).classList.remove('open');
+  if(id==='detOverlay')document.body.style.overflow='';
+}
 async function syncNow(){await Promise.all([loadAll(),fetchHistorique(),loadPhotos()]);renderTabs();await renderGrid();if(currentNav==='accueil')renderAccueil();if(currentNav==='calendrier')renderCal();if(currentNav==='mois')renderMois();if(currentNav==='historique'){populateHistoPlantFilter();renderHistorique();}if(currentNav==='maladies')renderMaladies();}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200);}
 
@@ -1503,6 +1622,7 @@ async function saveIntervention(){
     await fetchHistorique();
     renderHistorique();
     populateHistoPlantFilter();
+    if(document.getElementById('detOverlay').classList.contains('open')&&viewingId)openDetail(viewingId);
   }catch(e){
     showToast('Erreur : '+e.message);
   }
@@ -1512,11 +1632,9 @@ async function saveIntervention(){
 // ── GALERIE PHOTOS ───────────────────────────────────────────────
 function renderGallery(p){
   const list=plantPhotos(p);
-  return `<div class="dsec" id="dGallery">
-    <div class="dsec-title">📷 Photos${list.length?` · ${list.length}`:''}</div>
+  return `<h3 class="dh">Photos<small>${list.length?`${list.length} photo${list.length>1?'s':''}`:''}</small></h3>
     ${photoStrip(list,{type:'plante',plantId:p.id},p.photo)}
-    ${list.length?'':'<div class="gallery-empty">Aucune photo pour l\'instant. Ajoute-en une : elle sera datée automatiquement.</div>'}
-  </div>`;
+    ${list.length?'':'<div class="gallery-empty">Aucune photo pour l\'instant. Ajoute-en une : elle sera datée automatiquement.</div>'}`;
 }
 
 // Visionneuse : photo + date + actions
@@ -1627,52 +1745,6 @@ function toggleMaladie(id){
   if(el)el.style.display=el.style.display==='none'?'block':'none';
 }
 
-// ── INJECT MALADIES + HISTORIQUE IN DETAIL VIEW ─────────────────
-const _origOpenDetail = openDetail;
-openDetail = async function(id){
-  await _origOpenDetail(id);
-  const p=plants.find(x=>x.id===id);if(!p)return;
-
-  // Galerie datée juste sous la photo de profil
-  const dbody=document.getElementById('dbody');
-  dbody.insertAdjacentHTML('afterbegin',renderGallery(p));
-
-  // Inject maladies section if data exists
-  const maladies=MALADIES_DB[p.nom];
-  if(maladies&&maladies.length){
-    dbody.insertAdjacentHTML('beforeend',`<div class="dsec">
-      <div class="dsec-title">🐛 Maladies & Ravageurs</div>
-      ${maladies.map(m=>`<div class="maladie-card">
-        <div class="maladie-name">🐛 ${m.nom}</div>
-        <div class="maladie-symptomes">⚠️ ${m.symptomes}</div>
-        <div class="maladie-traitement">${m.traitement}</div>
-      </div>`).join('')}
-    </div>`);
-  }
-
-  // Inject mini historique (last 3 for this plant)
-  const plantHisto=histoData.filter(h=>h.plantId===id).slice(0,3);
-  if(plantHisto.length){
-    dbody.insertAdjacentHTML('beforeend',`<div class="dsec">
-      <div class="dsec-title" style="display:flex;align-items:center;justify-content:space-between">
-        📋 Dernières interventions
-        <button onclick="openNewIntervention('${id}','${p.nom}')" style="font-size:11px;padding:3px 9px;border-radius:99px;border:1px solid var(--border2);background:transparent;color:var(--greenl);cursor:pointer">+ Ajouter</button>
-      </div>
-      ${plantHisto.map(h=>{const t=HISTO_TYPES[h.type]||HISTO_TYPES.autre;return`<div class="histo-entry">
-        <div class="histo-icon" style="background:${t.color}">${t.icon}</div>
-        <div class="histo-info"><div class="histo-plant" style="font-size:12px">${h.date?h.date.split('-').reverse().join('/'):''}</div><span class="histo-type-badge" style="background:${t.color};color:${t.text}">${h.type}</span>${h.note?`<div class="histo-note">${h.note}</div>`:''}</div>
-      </div>`;}).join('')}
-      ${histoData.filter(h=>h.plantId===id).length>3?`<div style="text-align:center;font-size:12px;color:var(--cream3);padding-top:6px;cursor:pointer" onclick="showNav('historique')">Voir tout l'historique →</div>`:''}
-    </div>`);
-  }else{
-    dbody.insertAdjacentHTML('beforeend',`<div class="dsec">
-      <div class="dsec-title">📋 Interventions</div>
-      <button onclick="openNewIntervention('${id}','${p.nom}')" class="btn btn-o" style="width:100%;justify-content:center">+ Enregistrer une intervention</button>
-    </div>`);
-  }
-
-  dbody.querySelector('#dGallery').addEventListener('click',handlePhotoStripClick);
-};
 
 // Redimensionne une photo (côté le plus long ≤ maxSize) et la convertit en JPEG
 async function compressPhoto(dataUrl,maxSize=1600){
@@ -1727,7 +1799,17 @@ document.getElementById('grid').addEventListener('click',e=>{const c=e.target.cl
 document.getElementById('calView').addEventListener('click',e=>{const c=e.target.closest('[data-id]');if(c)openDetail(c.dataset.id);});
 document.getElementById('moisView').addEventListener('click',e=>{const c=e.target.closest('[data-id]');if(c)openDetail(c.dataset.id);});
 document.getElementById('btnEdit').addEventListener('click',editFromDetail);
-document.getElementById('btnCloseDet').addEventListener('click',()=>closeOverlay('detOverlay'));
+document.getElementById('btnDetIntervention').addEventListener('click',()=>{const p=plants.find(x=>x.id===viewingId);if(p)openNewIntervention(p.id,p.nom);});
+document.getElementById('btnDetPhoto').addEventListener('click',()=>{if(viewingId)openPhotoUpload({type:'plante',plantId:viewingId});});
+document.getElementById('dtabs').addEventListener('click',e=>{
+  const b=e.target.closest('[data-sec]');if(!b)return;
+  const sec=document.getElementById(b.dataset.sec);if(!sec)return;
+  const ov=document.getElementById('detOverlay');
+  const tabsH=document.getElementById('dtabs').offsetHeight;
+  ov.scrollTo({top:ov.scrollTop+sec.getBoundingClientRect().top-tabsH-8,behavior:'smooth'});
+});
+document.getElementById('detOverlay').addEventListener('scroll',updateDetailTabs,{passive:true});
+document.getElementById('detOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeOverlay('detOverlay');});
 document.getElementById('btnDetClose').addEventListener('click',()=>closeOverlay('detOverlay'));
 document.getElementById('btnCloseAdd').addEventListener('click',()=>closeOverlay('addOverlay'));
 document.getElementById('btnCancel').addEventListener('click',()=>closeOverlay('addOverlay'));
